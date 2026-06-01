@@ -7,22 +7,36 @@
     xmlns:prism="http://prismlibrary.com/"
     xmlns:viewModels="clr-namespace:MusicerChord.ViewModels"
     Title="{Binding Title}"
-    Width="525"
-    Height="350"
+    Width="1200"
+    Height="720"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
+    d:DesignHeight="300"
+    d:DesignWidth="800"
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid Background="{StaticResource DeepBackgroundBrush}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+
+        <TreeView
+            x:Name="DirectoryTree"
+            Grid.Row="1"
+            Grid.Column="0" />
+
+        <ListBox
+            x:Name="MusicList"
+            Grid.Row="1"
+            Grid.Column="1"
+            ItemsSource="{Binding SoundListViewModel.SoundFiles}" />
 
     </Grid>
 </Window>
