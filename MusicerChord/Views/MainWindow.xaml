@@ -30,7 +30,15 @@
         <TreeView
             x:Name="DirectoryTree"
             Grid.Row="1"
-            Grid.Column="0" />
+            Grid.Column="0"
+            ItemsSource="{Binding DirectoryTreeViewModel.SoundContainers}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock FontSize="{StaticResource CommonFontSize}" Text="{Binding Name}" />
+                </HierarchicalDataTemplate>
+
+            </TreeView.ItemTemplate>
+        </TreeView>
 
         <ListBox
             x:Name="MusicList"
