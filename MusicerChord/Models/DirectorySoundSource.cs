@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using Prism.Mvvm;
 
@@ -40,14 +41,13 @@ namespace MusicerChord.Models
             // 実際のフルパスを組み立てて、そこからファイルをスキャンする
             var fullPath = System.IO.Path.Combine(absoluteRootPath, Path);
 
-            if (!System.IO.Directory.Exists(fullPath))
+            if (!Directory.Exists(fullPath))
             {
                 return Enumerable.Empty<string>();
             }
 
             // フォルダ内の音声ファイルを列挙し、相対パスに変換して返す
-            return System.IO.Directory.EnumerateFiles(fullPath, "*.*", System.IO.SearchOption.TopDirectoryOnly)
-                // .mp3 や .wav などでフィルタリング
+            return Directory.EnumerateFiles(fullPath, "*.*", SearchOption.TopDirectoryOnly)
                 .Select(fp => System.IO.Path.GetRelativePath(absoluteRootPath, fp));
         }
     }

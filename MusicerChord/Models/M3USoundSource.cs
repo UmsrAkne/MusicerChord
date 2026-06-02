@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace MusicerChord.Models;
 
-public class M3uSoundSource : ISoundContainer
+public class M3USoundSource : ISoundContainer
 {
     private readonly string absoluteRootPath;
 
-    public M3uSoundSource(string relativePath, string absoluteRootPath)
+    public M3USoundSource(string relativePath, string absoluteRootPath)
     {
         Path = relativePath;
         this.absoluteRootPath = absoluteRootPath;
