@@ -31,7 +31,7 @@ namespace MusicerChord.ViewModels
             SoundListViewModel = soundListViewModel;
             DirectoryTreeViewModel = directoryTreeViewModel;
 
-            SetupDummyData();
+            _ = DirectoryTreeViewModel.LoadDirectories(RootPath);
         }
 
         public MainWindowViewModel()

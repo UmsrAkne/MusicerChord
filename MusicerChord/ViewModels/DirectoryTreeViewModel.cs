@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using MusicerChord.Core;
 using MusicerChord.Models;
 using Prism.Mvvm;
 
@@ -12,7 +14,15 @@ namespace MusicerChord.ViewModels
         public ObservableCollection<ISoundContainer> SoundContainers
         {
             get => soundContainers;
-            set => SetProperty(ref soundContainers, value);
+            private set => SetProperty(ref soundContainers, value);
+        }
+
+        public async Task LoadDirectories(string rootPath)
+        {
+            var containers =
+                await Task.Run(() => SoundSourceFactory.CreateFromPath(rootPath));
+
+            SoundContainers = new ObservableCollection<ISoundContainer>(containers);
         }
     }
 }
