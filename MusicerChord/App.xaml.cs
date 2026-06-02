@@ -17,8 +17,8 @@ namespace MusicerChord
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            // containerRegistry.RegisterSingleton<DirectoryTreeViewModel>();
-            // containerRegistry.RegisterSingleton<SoundListViewModel>();
+            containerRegistry.RegisterSingleton<DirectoryTreeViewModel>();
+            containerRegistry.RegisterSingleton<SoundListViewModel>();
         }
     }
 }
