@@ -9,7 +9,8 @@ namespace MusicerChord.Models
     public class DirectorySoundSource : BindableBase, ISoundContainer
     {
         private readonly string absoluteRootPath; // アプリ設定のルートパス
-        private ObservableCollection<ISoundContainer> children;
+        private ObservableCollection<ISoundContainer> children = new ();
+        private bool hasChildren;
 
         public DirectorySoundSource(string relativePath, string absoluteRootPath)
         {
@@ -20,6 +21,8 @@ namespace MusicerChord.Models
         public string Name => System.IO.Path.GetFileName(Path);
 
         public string Path { get; } // 例: "Ambient/Nature"
+
+        public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
 
         public ObservableCollection<ISoundContainer> Children
         {

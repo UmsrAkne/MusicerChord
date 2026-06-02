@@ -15,6 +15,8 @@ namespace MusicerChord.Models
 
         ObservableCollection<ISoundContainer> Children { get; }
 
+        static bool HasChildren { get; set; }
+
         // このソースが内包しているサウンドの相対パス一覧を返す
         // 後々DB化や遅延読み込み（IAsyncEnumerableなど）にする際も、このシグネチャなら対応しやすいです
         IEnumerable<string> GetRelativeFilePaths();

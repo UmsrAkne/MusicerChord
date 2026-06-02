@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MusicerChord.Models;
 
 namespace MusicerChord.Core
@@ -14,29 +15,39 @@ namespace MusicerChord.Core
         public static List<ISoundContainer> CreateFromPath(string absolutePath)
         {
             var result = new List<ISoundContainer>();
-            var relativePath = Path.GetRelativePath(Directory.GetCurrentDirectory(), absolutePath);
 
-            // 1. ディレクトリの場合
-            if (Directory.Exists(absolutePath))
+            // EnumerateFileSystemEntries を使うことで、配列を作らずに1階層目を列挙
+            foreach (var subPath in Directory.EnumerateFileSystemEntries(absolutePath))
             {
-                // 自身をDirectorySoundSourceとして追加
-                result.Add(new DirectorySoundSource(relativePath, absolutePath));
-
-                // 中にあるファイルやディレクトリを再帰的、あるいはフラットに走査して変換
-                foreach (var subPath in Directory.GetFileSystemEntries(absolutePath))
+                if (Directory.Exists(subPath))
                 {
-                    result.AddRange(CreateFromPath(subPath)); // 再帰的に処理
+                    var relative = Path.GetRelativePath(absolutePath, subPath);
+                    var hasChildren = Directory.EnumerateFileSystemEntries(subPath).Any(); // 中身が「空かどうか」だけを判定
+
+                    // コンストラクタやプロパティで hasChildren を渡す
+                    var item = new DirectorySoundSource(relative, subPath)
+                    {
+                        HasChildren = hasChildren,
+                    };
+
+                    if (hasChildren)
+                    {
+                        // 表示のためにダミーの要素を入れる
+                        item.Children.Add(new DirectorySoundSource(string.Empty, string.Empty));
+                    }
+
+                    result.Add(item);
                 }
-            }
 
-            // 2. ファイルの場合
-            else if (File.Exists(absolutePath))
-            {
-                var extension = Path.GetExtension(absolutePath).ToLower();
-
-                if (extension is ".m3u" or ".m3u8")
+                if (File.Exists(subPath))
                 {
-                    result.Add(new M3USoundSource(relativePath, absolutePath));
+                    var extension = Path.GetExtension(subPath).ToLower();
+
+                    if (extension is ".m3u" or ".m3u8")
+                    {
+                        var rel = Path.GetRelativePath(subPath, absolutePath);
+                        result.Add(new M3USoundSource(rel, absolutePath));
+                    }
                 }
             }
 

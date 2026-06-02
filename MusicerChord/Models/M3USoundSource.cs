@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Prism.Mvvm;
 
 namespace MusicerChord.Models;
 
-public class M3USoundSource : ISoundContainer
+public class M3USoundSource : BindableBase, ISoundContainer
 {
     private readonly string absoluteRootPath;
+    private bool hasChildren;
 
     public M3USoundSource(string relativePath, string absoluteRootPath)
     {
@@ -18,7 +20,9 @@ public class M3USoundSource : ISoundContainer
 
     public string Path { get; } // 例: "Playlists/my_favorite.m3u"
 
-    public ObservableCollection<ISoundContainer> Children { get; }
+    public ObservableCollection<ISoundContainer> Children { get; } = new ();
+
+    public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
 
     public IEnumerable<string> GetRelativeFilePaths()
     {
