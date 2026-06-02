@@ -16,6 +16,7 @@ namespace MusicerChord.Models
         {
             Path = relativePath;
             this.absoluteRootPath = absoluteRootPath;
+            AbsolutePath = absoluteRootPath;
         }
 
         public string Name => System.IO.Path.GetFileName(Path);
@@ -38,6 +39,8 @@ namespace MusicerChord.Models
                 RaisePropertyChanged();
             }
         }
+
+        public string AbsolutePath { get; set; }
 
         public IEnumerable<string> GetRelativeFilePaths()
         {

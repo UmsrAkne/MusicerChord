@@ -15,6 +15,8 @@ namespace MusicerChord.Models
 
         ObservableCollection<ISoundContainer> Children { get; }
 
+        string AbsolutePath { get; set; }
+
         static bool HasChildren { get; set; }
 
         // このソースが内包しているサウンドの相対パス一覧を返す

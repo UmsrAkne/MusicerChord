@@ -1,0 +1,28 @@
+﻿<UserControl
+    x:Class="MusicerChord.Controls.CustomTreeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:MusicerChord.ViewModels"
+    d:DataContext="{d:DesignInstance viewModels:DirectoryTreeViewModel}"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
+
+    <TreeView x:Name="DirectoryTree" ItemsSource="{Binding SoundContainers}">
+        <TreeView.ItemContainerStyle>
+            <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="{x:Type TreeViewItem}">
+                <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded" />
+            </Style>
+        </TreeView.ItemContainerStyle>
+
+        <TreeView.ItemTemplate>
+            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                <TextBlock FontSize="{StaticResource CommonFontSize}" Text="{Binding Name}" />
+            </HierarchicalDataTemplate>
+
+        </TreeView.ItemTemplate>
+    </TreeView>
+
+</UserControl>
