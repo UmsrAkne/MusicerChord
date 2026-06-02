@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using MusicerChord.ViewModels;
 using MusicerChord.Views;
 using Prism.Ioc;
 
@@ -16,6 +17,8 @@ namespace MusicerChord
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            containerRegistry.RegisterSingleton<DirectoryTreeViewModel>();
+            containerRegistry.RegisterSingleton<SoundListViewModel>();
         }
     }
 }
