@@ -25,6 +25,8 @@ namespace MusicerChord.ViewModels
             SoundListViewModel soundListViewModel,
             DirectoryTreeViewModel directoryTreeViewModel)
         {
+            var setting = AppSettings.Load(AppSettings.SettingFilePath);
+
             SoundListViewModel = soundListViewModel;
             DirectoryTreeViewModel = directoryTreeViewModel;
 
