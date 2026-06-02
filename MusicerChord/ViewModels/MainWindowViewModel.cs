@@ -20,12 +20,14 @@ namespace MusicerChord.ViewModels
         #endif
 
         private readonly AppVersionInfo appVersionInfo = new ();
+        private string rootPath = string.Empty;
 
         public MainWindowViewModel(
             SoundListViewModel soundListViewModel,
             DirectoryTreeViewModel directoryTreeViewModel)
         {
             var setting = AppSettings.Load(AppSettings.SettingFilePath);
+            RootPath = setting.RootPath;
 
             SoundListViewModel = soundListViewModel;
             DirectoryTreeViewModel = directoryTreeViewModel;
@@ -44,6 +46,8 @@ namespace MusicerChord.ViewModels
         public SoundListViewModel SoundListViewModel { get; private set; }
 
         public DirectoryTreeViewModel DirectoryTreeViewModel { get; private set; }
+
+        public string RootPath { get => rootPath; set => SetProperty(ref rootPath, value); }
 
         public string Title => appVersionInfo.Title;
 
