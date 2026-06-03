@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
+using MusicerChord.Core;
 using Prism.Mvvm;
 
 namespace MusicerChord.Models
@@ -11,6 +15,7 @@ namespace MusicerChord.Models
         private readonly string absoluteRootPath; // アプリ設定のルートパス
         private ObservableCollection<ISoundContainer> children = new ();
         private bool hasChildren;
+        private AsyncRelayCommand loadChildrenCommand;
 
         public DirectorySoundSource(string relativePath, string absoluteRootPath)
         {
@@ -41,6 +46,19 @@ namespace MusicerChord.Models
         }
 
         public string AbsolutePath { get; set; }
+
+        public AsyncRelayCommand LoadChildrenCommand =>
+        loadChildrenCommand ??= new AsyncRelayCommand(async () =>
+        {
+            if (!HasChildren)
+            {
+                return;
+            }
+
+            var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(AbsolutePath));
+            Children.Clear();
+            Children.AddRange(items);
+        });
 
         public IEnumerable<string> GetRelativeFilePaths()
         {

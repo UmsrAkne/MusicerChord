@@ -2,6 +2,7 @@
     x:Class="MusicerChord.Controls.CustomTreeView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:MusicerChord.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:MusicerChord.ViewModels"
@@ -12,8 +13,8 @@
 
     <TreeView x:Name="DirectoryTree" ItemsSource="{Binding SoundContainers}">
         <TreeView.ItemContainerStyle>
-            <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="{x:Type TreeViewItem}">
-                <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded" />
+            <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="TreeViewItem">
+                <Setter Property="behaviors:TreeViewItemBehavior.ExpandedCommand" Value="{Binding LoadChildrenCommand}" />
             </Style>
         </TreeView.ItemContainerStyle>
 

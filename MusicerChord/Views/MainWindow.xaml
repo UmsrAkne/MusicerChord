@@ -48,12 +48,10 @@
             </Border>
         </StackPanel>
 
-        <!-- xaml にはコマンドパラメーターについての記述がないが、内部実装で展開中のノードがコマンドに入力されるようになっている。 -->
         <controls:CustomTreeView
             Grid.Row="1"
             Grid.Column="0"
-            DataContext="{Binding DirectoryTreeViewModel}"
-            ExpandedCommand="{Binding LoadChildrenCommand}" />
+            DataContext="{Binding DirectoryTreeViewModel}" />
 
         <ListBox
             x:Name="MusicList"
