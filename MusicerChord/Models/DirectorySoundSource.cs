@@ -16,6 +16,7 @@ namespace MusicerChord.Models
         private ObservableCollection<ISoundContainer> children = new ();
         private bool hasChildren;
         private AsyncRelayCommand loadChildrenCommand;
+        private DateTime lastLoadedTime;
 
         public DirectorySoundSource(string relativePath, string absoluteRootPath)
         {
@@ -48,17 +49,28 @@ namespace MusicerChord.Models
         public string AbsolutePath { get; set; }
 
         public AsyncRelayCommand LoadChildrenCommand =>
-        loadChildrenCommand ??= new AsyncRelayCommand(async () =>
-        {
-            if (!HasChildren)
+            loadChildrenCommand ??= new AsyncRelayCommand(async () =>
             {
-                return;
-            }
+                if (!HasChildren)
+                {
+                    return;
+                }
 
-            var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(AbsolutePath));
-            Children.Clear();
-            Children.AddRange(items);
-        });
+                var currentWriteTime = GetSourceLastWriteTime(AbsolutePath);
+
+                // 前回読み込んだ時と日時が同じなら、中身が変わっていないので中断。
+                if (lastLoadedTime == currentWriteTime)
+                {
+                    return;
+                }
+
+                var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(AbsolutePath));
+
+                Children.Clear();
+                Children.AddRange(items);
+
+                lastLoadedTime = currentWriteTime;
+            });
 
         public IEnumerable<string> GetRelativeFilePaths()
         {
@@ -73,6 +85,18 @@ namespace MusicerChord.Models
             // フォルダ内の音声ファイルを列挙し、相対パスに変換して返す
             return Directory.EnumerateFiles(fullPath, "*.*", SearchOption.TopDirectoryOnly)
                 .Select(fp => System.IO.Path.GetRelativePath(absoluteRootPath, fp));
+        }
+
+        private DateTime GetSourceLastWriteTime(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                return Directory.GetLastWriteTime(path);
+            }
+
+            return File.Exists(path)
+                ? File.GetLastWriteTime(path)
+                : DateTime.MinValue;
         }
     }
 }
