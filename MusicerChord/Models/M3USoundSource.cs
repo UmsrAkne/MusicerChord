@@ -14,6 +14,7 @@ public class M3USoundSource : BindableBase, ISoundContainer
     {
         Path = relativePath;
         this.absoluteRootPath = absoluteRootPath;
+        AbsolutePath = absoluteRootPath;
     }
 
     public string Name => System.IO.Path.GetFileNameWithoutExtension(Path);
@@ -21,6 +22,8 @@ public class M3USoundSource : BindableBase, ISoundContainer
     public string Path { get; } // 例: "Playlists/my_favorite.m3u"
 
     public ObservableCollection<ISoundContainer> Children { get; } = new ();
+
+    public string AbsolutePath { get; set; }
 
     public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
 

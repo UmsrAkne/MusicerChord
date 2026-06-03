@@ -2,6 +2,7 @@
     x:Class="MusicerChord.Views.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:MusicerChord.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
@@ -47,18 +48,12 @@
             </Border>
         </StackPanel>
 
-        <TreeView
-            x:Name="DirectoryTree"
+        <!-- xaml にはコマンドパラメーターについての記述がないが、内部実装で展開中のノードがコマンドに入力されるようになっている。 -->
+        <controls:CustomTreeView
             Grid.Row="1"
             Grid.Column="0"
-            ItemsSource="{Binding DirectoryTreeViewModel.SoundContainers}">
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                    <TextBlock FontSize="{StaticResource CommonFontSize}" Text="{Binding Name}" />
-                </HierarchicalDataTemplate>
-
-            </TreeView.ItemTemplate>
-        </TreeView>
+            DataContext="{Binding DirectoryTreeViewModel}"
+            ExpandedCommand="{Binding LoadChildrenCommand}" />
 
         <ListBox
             x:Name="MusicList"
