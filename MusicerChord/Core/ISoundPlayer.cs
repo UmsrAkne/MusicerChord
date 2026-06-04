@@ -10,6 +10,10 @@ namespace MusicerChord.Core
         /// </summary>
         float Volume { get; set; }
 
+        bool IsPlaying { get; }
+
+        SoundPlaybackItem CurrentItem { get; }
+
         /// <summary>
         /// 対象のアイテムを読み込んで再生します。既に再生中の場合は停止して切り替えます。
         /// </summary>
@@ -39,5 +43,9 @@ namespace MusicerChord.Core
         /// 内部リソースの停止と解放。
         /// </summary>
         void StopAndRelease();
+
+        int GetPlaybackTimeMs();
+
+        int GetTotalTimeMs();
     }
 }

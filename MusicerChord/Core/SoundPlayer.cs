@@ -29,6 +29,10 @@ namespace MusicerChord.Core
             }
         }
 
+        public bool IsPlaying => CurrentItem is { PlaybackState: PlaybackState.Playing };
+
+        public SoundPlaybackItem CurrentItem { get => currentItem; private set => currentItem = value; }
+
         /// <summary>
         /// 対象のアイテムを読み込んで再生します。既に再生中の場合は停止して切り替えます。
         /// </summary>
@@ -48,11 +52,11 @@ namespace MusicerChord.Core
             }
 
             StopAndRelease();
-            currentItem = item;
+            CurrentItem = item;
 
             try
             {
-                audioFile = new AudioFileReader(currentItem.SoundFile.FullPath);
+                audioFile = new AudioFileReader(CurrentItem.SoundFile.FullPath);
                 audioFile.Volume = volume;
 
                 if (startSeconds > 0)
@@ -118,11 +122,11 @@ namespace MusicerChord.Core
 
             audioFile.CurrentTime = time;
 
-            if (currentItem != null)
+            if (CurrentItem != null)
             {
                 // 注意: CurrentPlaybackTime に変更通知（RaisePropertyChanged等）がない場合は、
                 // ViewModel側で別途通知を呼ぶ必要があります。
-                currentItem.CurrentPlaybackTime = time;
+                CurrentItem.CurrentPlaybackTime = time;
             }
         }
 
@@ -137,16 +141,16 @@ namespace MusicerChord.Core
         /// </summary>
         public void UpdateItemState()
         {
-            if (currentItem == null)
+            if (CurrentItem == null)
             {
                 return;
             }
 
             var currentState = outputDevice?.PlaybackState ?? PlaybackState.Stopped;
 
-            currentItem.PlaybackState = currentState;
-            currentItem.IsPlaying = currentState == PlaybackState.Playing;
-            currentItem.CurrentPlaybackTime = audioFile.CurrentTime;
+            CurrentItem.PlaybackState = currentState;
+            CurrentItem.IsPlaying = currentState == PlaybackState.Playing;
+            CurrentItem.CurrentPlaybackTime = audioFile.CurrentTime;
         }
 
         /// <summary>
@@ -168,13 +172,23 @@ namespace MusicerChord.Core
                 audioFile = null;
             }
 
-            if (currentItem != null)
+            if (CurrentItem != null)
             {
                 // 参照を外す前に最後の状態を同期
-                currentItem.PlaybackState = PlaybackState.Stopped;
-                currentItem.IsPlaying = false;
-                currentItem = null;
+                CurrentItem.PlaybackState = PlaybackState.Stopped;
+                CurrentItem.IsPlaying = false;
+                CurrentItem = null;
             }
+        }
+
+        public int GetPlaybackTimeMs()
+        {
+            return (int)audioFile.CurrentTime.TotalMilliseconds;
+        }
+
+        public int GetTotalTimeMs()
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void Dispose(bool disposing)
