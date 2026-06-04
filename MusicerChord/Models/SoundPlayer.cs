@@ -10,6 +10,23 @@ namespace MusicerChord.Models
         private WaveOutEvent outputDevice;
         private SoundPlaybackItem currentItem;
         private bool isDisposed;
+        private float volume = 1.0f;
+
+        /// <summary>
+        /// 音量（0.0 ～ 1.0）を取得または設定します。
+        /// </summary>
+        public float Volume
+        {
+            get => volume;
+            set
+            {
+                volume = Math.Clamp(value, 0.0f, 1.0f);
+                if (audioFile != null)
+                {
+                    audioFile.Volume = volume;
+                }
+            }
+        }
 
         /// <summary>
         /// 対象のアイテムを読み込んで再生します。既に再生中の場合は停止して切り替えます。
@@ -37,6 +54,7 @@ namespace MusicerChord.Models
             try
             {
                 audioFile = new AudioFileReader(currentItem.SoundFile.FullPath);
+                audioFile.Volume = volume;
                 outputDevice = new WaveOutEvent();
 
                 // 再生終了イベントのハンドラを登録
