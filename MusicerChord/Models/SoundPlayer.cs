@@ -4,7 +4,7 @@ using NAudio.Wave;
 
 namespace MusicerChord.Models
 {
-    public class SoundPlayer : IDisposable
+    public class SoundPlayer : IDisposable, ISoundPlayer
     {
         private AudioFileReader audioFile;
         private WaveOutEvent outputDevice;
@@ -131,6 +131,51 @@ namespace MusicerChord.Models
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// SoundPlaybackItem のプロパティを現在の NAudio の状態と同期します。
+        /// </summary>
+        public void UpdateItemState()
+        {
+            if (currentItem == null)
+            {
+                return;
+            }
+
+            var currentState = outputDevice?.PlaybackState ?? PlaybackState.Stopped;
+
+            currentItem.PlaybackState = currentState;
+            currentItem.IsPlaying = currentState == PlaybackState.Playing;
+            currentItem.CurrentPlaybackTime = audioFile.CurrentTime;
+        }
+
+        /// <summary>
+        /// 内部リソースの停止と解放。
+        /// </summary>
+        public void StopAndRelease()
+        {
+            if (outputDevice != null)
+            {
+                outputDevice.PlaybackStopped -= OnPlaybackStopped;
+                outputDevice.Stop();
+                outputDevice.Dispose();
+                outputDevice = null;
+            }
+
+            if (audioFile != null)
+            {
+                audioFile.Dispose();
+                audioFile = null;
+            }
+
+            if (currentItem != null)
+            {
+                // 参照を外す前に最後の状態を同期
+                currentItem.PlaybackState = PlaybackState.Stopped;
+                currentItem.IsPlaying = false;
+                currentItem = null;
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!isDisposed)
@@ -157,51 +202,6 @@ namespace MusicerChord.Models
                     StopAndRelease();
                 }
             });
-        }
-
-        /// <summary>
-        /// SoundPlaybackItem のプロパティを現在の NAudio の状態と同期します。
-        /// </summary>
-        private void UpdateItemState()
-        {
-            if (currentItem == null)
-            {
-                return;
-            }
-
-            var currentState = outputDevice?.PlaybackState ?? PlaybackState.Stopped;
-
-            currentItem.PlaybackState = currentState;
-            currentItem.IsPlaying = currentState == PlaybackState.Playing;
-            currentItem.CurrentPlaybackTime = audioFile.CurrentTime;
-        }
-
-        /// <summary>
-        /// 内部リソースの停止と解放。
-        /// </summary>
-        private void StopAndRelease()
-        {
-            if (outputDevice != null)
-            {
-                outputDevice.PlaybackStopped -= OnPlaybackStopped;
-                outputDevice.Stop();
-                outputDevice.Dispose();
-                outputDevice = null;
-            }
-
-            if (audioFile != null)
-            {
-                audioFile.Dispose();
-                audioFile = null;
-            }
-
-            if (currentItem != null)
-            {
-                // 参照を外す前に最後の状態を同期
-                currentItem.PlaybackState = PlaybackState.Stopped;
-                currentItem.IsPlaying = false;
-                currentItem = null;
-            }
         }
     }
 }
