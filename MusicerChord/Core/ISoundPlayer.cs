@@ -1,6 +1,7 @@
 ﻿using System;
+using MusicerChord.Models;
 
-namespace MusicerChord.Models
+namespace MusicerChord.Core
 {
     public interface ISoundPlayer
     {

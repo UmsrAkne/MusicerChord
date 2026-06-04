@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
+using MusicerChord.Models;
 using NAudio.Wave;
 
-namespace MusicerChord.Models
+namespace MusicerChord.Core
 {
     public class SoundPlayer : IDisposable, ISoundPlayer
     {
