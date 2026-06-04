@@ -21,5 +21,8 @@ namespace MusicerChord.Models
 
         [NotMapped]
         public int PlayCount { get; set; }
+
+        [NotMapped]
+        public string FullPath { get; set; }
     }
 }
