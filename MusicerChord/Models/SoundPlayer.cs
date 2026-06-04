@@ -31,14 +31,14 @@ namespace MusicerChord.Models
         /// <summary>
         /// 対象のアイテムを読み込んで再生します。既に再生中の場合は停止して切り替えます。
         /// </summary>
-        public void Play(SoundPlaybackItem item)
+        public void Play(SoundPlaybackItem item, double startSeconds = 0)
         {
             if (item?.SoundFile?.FullPath == null || !File.Exists(item.SoundFile.FullPath))
             {
-                throw new FileNotFoundException("再生対象のファイルが見つかりません。", item?.SoundFile?.FullPath);
+                return;
             }
 
-            // 同じアイテムで一時停止中だった場合は、再開処理を行う
+            // 一時停止からの再開ならそのまま再生
             if (currentItem == item && outputDevice?.PlaybackState == PlaybackState.Paused)
             {
                 outputDevice.Play();
@@ -46,18 +46,20 @@ namespace MusicerChord.Models
                 return;
             }
 
-            // 別の曲を再生中なら一度クリーンアップ
             StopAndRelease();
-
             currentItem = item;
 
             try
             {
                 audioFile = new AudioFileReader(currentItem.SoundFile.FullPath);
                 audioFile.Volume = volume;
-                outputDevice = new WaveOutEvent();
 
-                // 再生終了イベントのハンドラを登録
+                if (startSeconds > 0)
+                {
+                    audioFile.CurrentTime = TimeSpan.FromSeconds(startSeconds);
+                }
+
+                outputDevice = new WaveOutEvent();
                 outputDevice.PlaybackStopped += OnPlaybackStopped;
 
                 outputDevice.Init(audioFile);
