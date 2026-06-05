@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using MusicerChord.Models;
 using MusicerChord.Utils;
 using Prism.Mvvm;
@@ -31,6 +32,8 @@ namespace MusicerChord.ViewModels
             SoundListViewModel = soundListViewModel;
             DirectoryTreeViewModel = directoryTreeViewModel;
 
+            DirectoryTreeViewModel.SoundContainerOpened += OnSoundContainerOpened;
+
             _ = DirectoryTreeViewModel.LoadDirectories(RootPath);
         }
 
@@ -49,6 +52,23 @@ namespace MusicerChord.ViewModels
         public string RootPath { get => rootPath; set => SetProperty(ref rootPath, value); }
 
         public string Title => appVersionInfo.Title;
+
+        private void OnSoundContainerOpened(ISoundContainer obj)
+        {
+            if (obj == null)
+            {
+                return;
+            }
+
+            // 1. mp3ファイルが存在するかチェック (ビジネスロジックは親かサービス層が持つ)
+            var hasMp3 = Directory.EnumerateFiles(obj.AbsolutePath, "*.mp3", SearchOption.TopDirectoryOnly).Any();
+
+            if (hasMp3)
+            {
+                // 2. 条件を満たしていれば、もう片方の子を更新
+                SoundListViewModel.UpdateSoundList(obj.AbsolutePath);
+            }
+        }
 
         [Conditional("DEBUG")]
         private void SetupDummyData()

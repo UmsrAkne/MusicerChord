@@ -5,6 +5,7 @@
     xmlns:controls="clr-namespace:MusicerChord.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:MusicerChord.Models"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:viewModels="clr-namespace:MusicerChord.ViewModels"
     Title="{Binding Title}"
@@ -58,7 +59,15 @@
             x:Name="MusicList"
             Grid.Row="1"
             Grid.Column="1"
-            ItemsSource="{Binding SoundListViewModel.SoundFiles}" />
+            ItemsSource="{Binding SoundListViewModel.SoundFiles}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:SoundFile}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding FileNameWithoutExtension}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
     </Grid>
 </Window>

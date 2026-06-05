@@ -1,7 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using MusicerChord.Core;
 using MusicerChord.Models;
+using Prism.Commands;
 using Prism.Mvvm;
 
 namespace MusicerChord.ViewModels
@@ -12,6 +14,8 @@ namespace MusicerChord.ViewModels
         private ObservableCollection<ISoundContainer> soundContainers = new ();
 
         private ISoundContainer selectedContainer;
+
+        public event Action<ISoundContainer> SoundContainerOpened ;
 
         public ObservableCollection<ISoundContainer> SoundContainers
         {
@@ -24,6 +28,12 @@ namespace MusicerChord.ViewModels
             get => selectedContainer;
             set => SetProperty(ref selectedContainer, value);
         }
+
+        public DelegateCommand OpenSoundContainerCommand => new (() =>
+        {
+            Console.WriteLine("Open Sound Container");
+            SoundContainerOpened?.Invoke(SelectedContainer);
+        });
 
         public async Task LoadDirectories(string rootPath)
         {
