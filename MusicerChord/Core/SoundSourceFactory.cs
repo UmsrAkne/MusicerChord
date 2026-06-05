@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MusicerChord.Models;
@@ -22,7 +23,15 @@ namespace MusicerChord.Core
                 if (Directory.Exists(subPath))
                 {
                     var relative = Path.GetRelativePath(absolutePath, subPath);
-                    var hasChildren = Directory.EnumerateFileSystemEntries(subPath).Any(); // 中身が「空かどうか」だけを判定
+                    var hasChildren = Directory.EnumerateFileSystemEntries(subPath).Any(childPath =>
+                    {
+                        if (Directory.Exists(childPath))
+                        {
+                            return true; // ディレクトリなら即座に true
+                        }
+
+                        return IsM3UFile(childPath); // ファイルなら拡張子をチェック
+                    });
 
                     // コンストラクタやプロパティで hasChildren を渡す
                     var item = new DirectorySoundSource(relative, subPath)
@@ -41,9 +50,7 @@ namespace MusicerChord.Core
 
                 if (File.Exists(subPath))
                 {
-                    var extension = Path.GetExtension(subPath).ToLower();
-
-                    if (extension is ".m3u" or ".m3u8")
+                    if (IsM3UFile(subPath))
                     {
                         var rel = Path.GetRelativePath(subPath, absolutePath);
                         result.Add(new M3USoundSource(rel, absolutePath));
@@ -52,6 +59,13 @@ namespace MusicerChord.Core
             }
 
             return result;
+        }
+
+        private static bool IsM3UFile(string subPath)
+        {
+            var extension = Path.GetExtension(subPath);
+            return extension.Equals(".m3u", StringComparison.OrdinalIgnoreCase) ||
+                   extension.Equals(".m3u8", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
