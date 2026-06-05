@@ -66,7 +66,7 @@ namespace MusicerChord.ViewModels
             if (hasMp3)
             {
                 // 2. 条件を満たしていれば、もう片方の子を更新
-                SoundListViewModel.UpdateSoundList(obj.AbsolutePath);
+                _ = SoundListViewModel.UpdateSoundListAsync(obj.AbsolutePath);
             }
         }
 
