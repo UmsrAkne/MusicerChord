@@ -30,6 +30,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -68,6 +69,18 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <Border
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Width="100"
+                    HorizontalAlignment="Left"
+                    Content="Play" />
+            </StackPanel>
+        </Border>
 
     </Grid>
 </Window>
