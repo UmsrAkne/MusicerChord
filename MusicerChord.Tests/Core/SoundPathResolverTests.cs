@@ -62,5 +62,22 @@ namespace MusicerChord.Tests.Core
 
             Assert.That(result, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void ResolveRelativePath_Test()
+        {
+            // Arrange
+            var root = @"D:\Sound";
+            var absolute = @"D:\Sound\test\music.mp3";
+            var resolver = new SoundPathResolver(root);
+
+            // Act
+            var result = resolver.ResolveRelativePath(absolute);
+
+            // Assert
+            var expected = @"test\music.mp3";
+
+            Assert.That(result, Is.EqualTo(expected));
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace MusicerChord.Core
             // Path.Combine を使えば、OSの区切り文字（\ や /）を安全に結合できます
             return System.IO.Path.Combine(currentRootPath, soundFile.RelativePath);
         }
+
+        public string ResolveRelativePath(string absolutePath)
+        {
+            return System.IO.Path.GetRelativePath(currentRootPath, absolutePath);
+        }
     }
 }
