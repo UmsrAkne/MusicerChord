@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using CommunityToolkit.Mvvm.Input;
 using MusicerChord.Core;
 using MusicerChord.Models;
+using Prism.Commands;
 using Prism.Mvvm;
 
 namespace MusicerChord.ViewModels
@@ -12,7 +12,10 @@ namespace MusicerChord.ViewModels
     public class DirectoryTreeViewModel : BindableBase
     {
         private ObservableCollection<ISoundContainer> soundContainers = new ();
-        private AsyncRelayCommand<DirectorySoundSource> loadCommand;
+
+        private ISoundContainer selectedContainer;
+
+        public event Action<ISoundContainer> SoundContainerOpened ;
 
         public ObservableCollection<ISoundContainer> SoundContainers
         {
@@ -20,22 +23,16 @@ namespace MusicerChord.ViewModels
             private set => SetProperty(ref soundContainers, value);
         }
 
-        public ICommand LoadChildrenCommand => loadCommand ??= new AsyncRelayCommand<DirectorySoundSource>(async (d) =>
+        public ISoundContainer SelectedContainer
         {
-            // xaml の方に記述はないが、このコマンドの引数には DirectorySoundSource が入力される。
-            // CustomTreeView は展開された TreeViewItem の DataContext である　DirectorySoundSource を CommandParameter として渡す。
-            // 詳細は CustomTreeView.xaml.cs の内部実装を参照。
-            if (d != null)
-            {
-                if (!d.HasChildren)
-                {
-                    return;
-                }
+            get => selectedContainer;
+            set => SetProperty(ref selectedContainer, value);
+        }
 
-                var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(d.AbsolutePath));
-                d.Children.Clear();
-                d.Children.AddRange(items);
-            }
+        public DelegateCommand OpenSoundContainerCommand => new (() =>
+        {
+            Console.WriteLine("Open Sound Container");
+            SoundContainerOpened?.Invoke(SelectedContainer);
         });
 
         public async Task LoadDirectories(string rootPath)

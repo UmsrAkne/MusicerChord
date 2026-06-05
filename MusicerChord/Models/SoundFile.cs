@@ -6,6 +6,8 @@ namespace MusicerChord.Models
 {
     public class SoundFile : BindableBase
     {
+        private int durationMs;
+
         public int Id { get; set; }
 
         // 例: "Ambient/01_rain.mp3" (ルートが D:\Sound なら、実際は D:\Sound\Ambient\01_rain.mp3)
@@ -15,11 +17,14 @@ namespace MusicerChord.Models
 
         public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(RelativePath);
 
-        public int DurationMs { get; set; }
+        public int DurationMs { get => durationMs; set => SetProperty(ref durationMs, value); }
 
         public bool IsSkip { get; set; }
 
         [NotMapped]
         public int PlayCount { get; set; }
+
+        [NotMapped]
+        public string FullPath { get; set; }
     }
 }

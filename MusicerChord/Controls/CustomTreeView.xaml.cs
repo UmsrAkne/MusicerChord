@@ -1,41 +1,55 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace MusicerChord.Controls
 {
     public partial class CustomTreeView : UserControl
     {
-        public readonly static DependencyProperty ExpandedCommandProperty =
+        public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(
-                nameof(ExpandedCommand),
-                typeof(ICommand),
+                nameof(SelectedItem),
+                typeof(object),
                 typeof(CustomTreeView),
-                new PropertyMetadata(null));
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    OnSelectedItemChangedByProperty));
 
         public CustomTreeView()
         {
             InitializeComponent();
+            DirectoryTree.SelectedItemChanged += OnSelectedItemChanged;
         }
 
-        public ICommand ExpandedCommand
+        public object SelectedItem
         {
-            get => (ICommand)GetValue(ExpandedCommandProperty);
-            set => SetValue(ExpandedCommandProperty, value);
+            get => GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
         }
 
-        private void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
+        private static void OnSelectedItemChangedByProperty(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.OriginalSource is not TreeViewItem treeViewItem)
+            if (d is CustomTreeView control && e.NewValue != control.DirectoryTree.SelectedItem)
             {
-                return;
+                if (e.NewValue == null)
+                {
+                    // 選択解除は直接的には難しいが、一応
+                    return;
+                }
+
+                // TreeViewItem を探して選択状態にするロジックが必要だが、
+                // ViewModel からの変更を反映させるには、TreeViewItem.IsSelected を各アイテムの ViewModel にバインドするのが一般的。
+                // 今回は SelectedItem の「取得」を外部から可能にすることが主目的と思われる。
+                // 逆方向（VM -> View）の同期が必要な場合は、TreeViewItem の Container を辿るか、
+                // ItemContainerStyle で IsSelected を ViewModel にバインドする必要がある。
             }
+        }
 
-            var commandParameter = treeViewItem.DataContext;
-
-            if (ExpandedCommand?.CanExecute(commandParameter) == true)
+        private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (!Equals(SelectedItem, e.NewValue))
             {
-                ExpandedCommand.Execute(commandParameter);
+                SelectedItem = e.NewValue;
             }
         }
     }

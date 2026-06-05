@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MusicerChord.Models
 {
@@ -18,6 +19,8 @@ namespace MusicerChord.Models
         string AbsolutePath { get; set; }
 
         static bool HasChildren { get; set; }
+
+        AsyncRelayCommand LoadChildrenCommand { get; }
 
         // このソースが内包しているサウンドの相対パス一覧を返す
         // 後々DB化や遅延読み込み（IAsyncEnumerableなど）にする際も、このシグネチャなら対応しやすいです

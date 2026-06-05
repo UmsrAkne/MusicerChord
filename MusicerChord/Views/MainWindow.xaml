@@ -5,6 +5,7 @@
     xmlns:controls="clr-namespace:MusicerChord.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:MusicerChord.Models"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:viewModels="clr-namespace:MusicerChord.ViewModels"
     Title="{Binding Title}"
@@ -29,6 +30,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -48,18 +50,38 @@
             </Border>
         </StackPanel>
 
-        <!-- xaml にはコマンドパラメーターについての記述がないが、内部実装で展開中のノードがコマンドに入力されるようになっている。 -->
         <controls:CustomTreeView
             Grid.Row="1"
             Grid.Column="0"
             DataContext="{Binding DirectoryTreeViewModel}"
-            ExpandedCommand="{Binding LoadChildrenCommand}" />
+            SelectedItem="{Binding SelectedContainer}" />
 
         <ListBox
             x:Name="MusicList"
             Grid.Row="1"
             Grid.Column="1"
-            ItemsSource="{Binding SoundListViewModel.SoundFiles}" />
+            ItemsSource="{Binding SoundListViewModel.SoundFiles}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:SoundFile}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding FileNameWithoutExtension}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Border
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Width="100"
+                    HorizontalAlignment="Left"
+                    Command="{Binding SoundListViewModel.PlayCommand}"
+                    Content="Play" />
+            </StackPanel>
+        </Border>
 
     </Grid>
 </Window>

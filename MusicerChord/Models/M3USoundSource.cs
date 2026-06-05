@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
 
 namespace MusicerChord.Models;
@@ -26,6 +28,8 @@ public class M3USoundSource : BindableBase, ISoundContainer
     public string AbsolutePath { get; set; }
 
     public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
+
+    public AsyncRelayCommand LoadChildrenCommand { get; } = new (() => Task.CompletedTask);
 
     public IEnumerable<string> GetRelativeFilePaths()
     {
