@@ -143,20 +143,13 @@ namespace MusicerChord.Core
         /// </summary>
         private bool CanExecuteCrossfade(SoundPlaybackItem item)
         {
-            if (item == null)
+            if (item?.SoundFile == null)
             {
                 return false;
             }
 
-            // 一度ダミーか何かでプレイヤーにセットして総時間を取るか、
-            // item自体が総時間を持っている必要があります。
-            // ここでは、現在 activePlayer にセットされている前提、または事前取得と仮定します。
-            var totalDurationSeconds = activePlayer.CurrentItem == item
-                ? activePlayer.GetTotalTimeMs() / 1000.0
-                : 0.0; // 実際はitemからDurationが取れる設計が望ましいです
+            var totalDurationSeconds = item.SoundFile.DurationMs / 1000.0;
 
-            // 便宜上、再生中でない新規アイテムの場合は、一時的にプレイヤーに聞いてみる等の処理が必要
-            // もし item.Duration があればそれがベスト。今回は安全のため仮で総秒数を算出
             if (totalDurationSeconds <= 0)
             {
                 // 再生前で時間が取れない場合は一旦有効として扱う、またはデータ側の値を使用する
