@@ -188,7 +188,7 @@ namespace MusicerChord.Core
 
         public int GetTotalTimeMs()
         {
-            throw new NotImplementedException();
+            return (int)audioFile.TotalTime.TotalMilliseconds;
         }
 
         protected virtual void Dispose(bool disposing)
