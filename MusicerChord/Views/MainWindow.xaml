@@ -51,7 +51,8 @@
         <controls:CustomTreeView
             Grid.Row="1"
             Grid.Column="0"
-            DataContext="{Binding DirectoryTreeViewModel}" />
+            DataContext="{Binding DirectoryTreeViewModel}"
+            SelectedItem="{Binding SelectedContainer}" />
 
         <ListBox
             x:Name="MusicList"

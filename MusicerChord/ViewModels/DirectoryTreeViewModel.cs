@@ -11,10 +11,18 @@ namespace MusicerChord.ViewModels
     {
         private ObservableCollection<ISoundContainer> soundContainers = new ();
 
+        private ISoundContainer selectedContainer;
+
         public ObservableCollection<ISoundContainer> SoundContainers
         {
             get => soundContainers;
             private set => SetProperty(ref soundContainers, value);
+        }
+
+        public ISoundContainer SelectedContainer
+        {
+            get => selectedContainer;
+            set => SetProperty(ref selectedContainer, value);
         }
 
         public async Task LoadDirectories(string rootPath)
