@@ -78,6 +78,7 @@
                 <Button
                     Width="100"
                     HorizontalAlignment="Left"
+                    Command="{Binding SoundListViewModel.PlayCommand}"
                     Content="Play" />
             </StackPanel>
         </Border>
