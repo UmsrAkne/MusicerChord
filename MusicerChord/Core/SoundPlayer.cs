@@ -13,6 +13,8 @@ namespace MusicerChord.Core
         private bool isDisposed;
         private float volume = 1.0f;
 
+        public event EventHandler PlaybackStopped;
+
         /// <summary>
         /// 音量（0.0 ～ 1.0）を取得または設定します。
         /// </summary>
@@ -206,6 +208,8 @@ namespace MusicerChord.Core
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs e)
         {
+            PlaybackStopped?.Invoke(this, EventArgs.Empty);
+
             // UIスレッドで状態更新を安全に行う
             System.Windows.Application.Current?.Dispatcher.Invoke(() =>
             {

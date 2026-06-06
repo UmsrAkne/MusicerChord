@@ -29,6 +29,16 @@ namespace MusicerChord.Core
                 CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
             };
 
+            CrossfadeController.NextTrackRequested += () =>
+            {
+                if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
+                {
+                    return;
+                }
+
+                CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
+            };
+
             timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Tick += (sender, args) =>
             {
