@@ -54,6 +54,8 @@ namespace MusicerChord.Core
 
         public double EndOffsetSeconds { get; set; } = 5.0;
 
+        public bool IsPlaying { get; }
+
         /// <summary>
         /// 新しい曲を再生します。すでに再生中の曲がある場合はクロスフェードを試みます。
         /// </summary>

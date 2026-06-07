@@ -24,8 +24,11 @@ namespace MusicerChord.Core
 
         public double EndOffsetSeconds { get; set; } = 5.0;
 
+        public bool IsPlaying => NowPlaying();
+
         public void Play(SoundPlaybackItem newItem)
         {
+            Console.WriteLine($"Play(v2) {newItem.SoundFile.FileName}");
             var toActivePlayer = soundPlayerFactory.Create();
             toActivePlayer.PlaybackStopped += OnPlaybackStopped;
 
@@ -38,17 +41,51 @@ namespace MusicerChord.Core
             var p = activePlayers.Dequeue();
             p.PlaybackStopped -= OnPlaybackStopped;
 
+            Console.WriteLine($"----");
+            Console.WriteLine("OnPlaybackStopped");
+
             // 他に再生中のプレイヤーがある場合はクロスフェードの最中なので、次を要求する必要はない。
             if (!NowPlaying())
             {
                 NextTrackRequested?.Invoke();
-                Console.WriteLine("NextTrackRequested");
+                Console.WriteLine($"----");
+                Console.WriteLine("NextTrackRequested (Triggered by PlaybackStopped)");
             }
         }
 
         public void Update(double deltaTimeSeconds)
         {
-            Console.WriteLine($"Update: {deltaTimeSeconds}");
+            // キューにプレイヤーがいない（何も再生していない）場合は何もしない
+            if (!activePlayers.TryPeek(out var activePlayer) || !activePlayer.IsPlaying)
+            {
+                return;
+            }
+
+            // 1. UI等への状態同期
+            activePlayer.UpdateItemState();
+
+            // 2. 再生時間の監視 と 次の曲の要求ロジック
+            if (CanExecuteCrossfade(activePlayer.CurrentItem))
+            {
+                double totalMs = activePlayer.GetTotalTimeMs();
+                double currentMs = activePlayer.GetPlaybackTimeMs();
+
+                // 終了地点（ミリ秒換算）
+                var triggerThresholdMs = totalMs - ((EndOffsetSeconds + CrossfadeDurationSeconds) * 1000);
+
+                // 終了地点に達した、かつ、まだ次の曲を要求していない場合
+                if (currentMs >= triggerThresholdMs && !activePlayer.HasNextTrackRequested)
+                {
+                    activePlayer.HasNextTrackRequested = true;
+                    NextTrackRequested?.Invoke();
+
+                    Console.WriteLine($"----");
+                    Console.WriteLine($"activePlayer.CurrentItem: {activePlayer.CurrentItem?.SoundFile?.FileName}");
+                    Console.WriteLine($"activePlayer.CurrentItem.DurationMs: {activePlayer.CurrentItem?.SoundFile?.DurationMs}");
+
+                    Console.WriteLine("NextTrackRequested (Triggered by Update)");
+                }
+            }
         }
 
         public bool CanExecuteCrossfade(SoundPlaybackItem item)

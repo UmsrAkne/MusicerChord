@@ -16,6 +16,8 @@ namespace MusicerChord.Core
 
         SoundPlaybackItem CurrentItem { get; }
 
+        bool HasNextTrackRequested { get; set; }
+
         /// <summary>
         /// 対象のアイテムを読み込んで再生します。既に再生中の場合は停止して切り替えます。
         /// </summary>

@@ -57,8 +57,25 @@ namespace MusicerChord.Core
                 return;
             }
 
-            currentPlayingIndex = currentPlayingIndex >= SoundPlaybackItems.Count - 1 ? 0 : currentPlayingIndex;
-            CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
+            var oldIndex = currentPlayingIndex;
+            currentPlayingIndex = currentPlayingIndex >= SoundPlaybackItems.Count - 1 ? -1 : currentPlayingIndex;
+            var item = SoundPlaybackItems[++currentPlayingIndex];
+
+            if (!CrossfadeController.IsPlaying)
+            {
+                CrossfadeController.Play(item);
+                Console.WriteLine($"PlayNext index: {currentPlayingIndex}");
+                return;
+            }
+
+            if (CrossfadeController.CanExecuteCrossfade(item))
+            {
+                CrossfadeController.Play(item);
+                Console.WriteLine($"PlayNext index: {currentPlayingIndex}");
+                return;
+            }
+
+            currentPlayingIndex = oldIndex;
         }
     }
 }
