@@ -64,6 +64,9 @@ namespace MusicerChord.Core
             // 1. UI等への状態同期
             activePlayer.UpdateItemState();
 
+            // 音量のコントロール
+            ApplyVolumeControl();
+
             // 2. 再生時間の監視 と 次の曲の要求ロジック
             if (CanExecuteCrossfade(activePlayer.CurrentItem))
             {
@@ -116,6 +119,47 @@ namespace MusicerChord.Core
         private bool NowPlaying()
         {
             return activePlayers.Any();
+        }
+
+        private void ApplyVolumeControl()
+        {
+            var playerCount = activePlayers.Count;
+
+            // プレイヤーの数が 0,1 の場合は音量固定
+            if (playerCount < 2)
+            {
+                if (activePlayers.TryPeek(out var singlePlayer))
+                {
+                    singlePlayer.Volume = 1.0f; // または設定されたマスター音量
+                }
+
+                return;
+            }
+
+            // プレイヤー数２個の場合はクロスフェード
+            if (playerCount == 2)
+            {
+                // Queueの性質上、先頭(Old)がフェードアウト、後ろ(New)がフェードインになる
+                var playerArray = activePlayers.ToArray();
+                var oldPlayer = playerArray[0];
+                var newPlayer = playerArray[1];
+
+                // 古い曲の残り時間をベースに、フェードの進捗率（0.0 〜 1.0）を計算
+                double totalMs = oldPlayer.GetTotalTimeMs();
+                double currentMs = oldPlayer.GetPlaybackTimeMs();
+
+                // フェードが開始されるべき時間（ミリ秒）
+                var fadeStartMs = totalMs - ((EndOffsetSeconds + CrossfadeDurationSeconds) * 1000);
+                var fadeDurationMs = CrossfadeDurationSeconds * 1000;
+
+                // 進捗率の計算 (0.0: フェード開始時 -> 1.0: フェード完了/曲終了時)
+                var rawProgress = (currentMs - fadeStartMs) / fadeDurationMs;
+                var progress = (float)Math.Clamp(rawProgress, 0.0, 1.0);
+
+                // 音量の適用（線形フェードの場合）
+                oldPlayer.Volume = 1.0f - progress; // 1.0 -> 0.0 へ減少
+                newPlayer.Volume = progress; // 0.0 -> 1.0 へ増加
+            }
         }
     }
 }
