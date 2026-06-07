@@ -12,7 +12,10 @@ namespace MusicerChord.Core
     public class SoundPlayerService
     {
         private readonly DispatcherTimer timer = new ();
+        private readonly int updateIntervalMs = 100;
+
         private int currentPlayingIndex;
+        private DateTime lastUpdateTime = DateTime.Now;
 
         public SoundPlayerService()
         {
@@ -23,10 +26,12 @@ namespace MusicerChord.Core
             CrossfadeController.CrossfadeTimingReached += PlayNext;
             CrossfadeController.NextTrackRequested += PlayNext;
 
-            timer.Interval = TimeSpan.FromMilliseconds(100);
-            timer.Tick += (sender, args) =>
+            timer.Interval = TimeSpan.FromMilliseconds(updateIntervalMs);
+            timer.Tick += (_, _) =>
             {
-                CrossfadeController.Update(0.1);
+                var now = DateTime.Now;
+                CrossfadeController.Update((now - lastUpdateTime).Milliseconds);
+                lastUpdateTime = now;
             };
         }
 
