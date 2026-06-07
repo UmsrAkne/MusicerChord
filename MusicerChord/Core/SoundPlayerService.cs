@@ -21,7 +21,8 @@ namespace MusicerChord.Core
         {
             var p1 = new SoundPlayer();
             var p2 = new SoundPlayer();
-            CrossfadeController = new CrossfadeController(p1, p2);
+            var p3 = new SoundPlayer();
+            CrossfadeController = new CrossFadeControllerV2(p1, p2, p3);
 
             CrossfadeController.NextTrackRequested += PlayNext;
 
@@ -36,7 +37,7 @@ namespace MusicerChord.Core
 
         public List<SoundPlaybackItem> SoundPlaybackItems { get; set; }
 
-        private CrossfadeController CrossfadeController { get; set; }
+        private ICrossfadeController CrossfadeController { get; set; }
 
         public void Play()
         {

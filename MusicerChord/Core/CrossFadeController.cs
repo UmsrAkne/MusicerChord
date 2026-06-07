@@ -5,7 +5,7 @@ namespace MusicerChord.Core
 {
     using System;
 
-    public class CrossfadeController
+    public class CrossfadeController : ICrossfadeController
     {
         // 2つのプレイヤーインスタンス
         private readonly ISoundPlayer playerA;
@@ -161,7 +161,7 @@ namespace MusicerChord.Core
         /// <summary>
         /// 指定されたアイテムが、設定されたクロスフェード要素の合計時間を満たしているか判定します。
         /// </summary>
-        private bool CanExecuteCrossfade(SoundPlaybackItem item)
+        public bool CanExecuteCrossfade(SoundPlaybackItem item)
         {
             if (item?.SoundFile == null)
             {
