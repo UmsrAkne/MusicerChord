@@ -9,7 +9,7 @@ namespace MusicerChord.Core
     {
         private readonly ISoundPlayerFactory soundPlayerFactory;
         private List<ISoundPlayer> players;
-        private List<ISoundPlayer> activePlayers = new ();
+        private Queue<ISoundPlayer> activePlayers = new ();
 
         public CrossFadeControllerV2(ISoundPlayerFactory factory)
         {
@@ -27,9 +27,23 @@ namespace MusicerChord.Core
         public void Play(SoundPlaybackItem newItem)
         {
             var toActivePlayer = soundPlayerFactory.Create();
-            toActivePlayer.PlaybackStopped += (_, _) => { NextTrackRequested?.Invoke(); };
+            toActivePlayer.PlaybackStopped += OnPlaybackStopped;
+
             toActivePlayer.Play(newItem);
-            activePlayers.Add(toActivePlayer);
+            activePlayers.Enqueue(toActivePlayer);
+        }
+
+        private void OnPlaybackStopped(object sender, EventArgs e)
+        {
+            var p = activePlayers.Dequeue();
+            p.PlaybackStopped -= OnPlaybackStopped;
+
+            // 他に再生中のプレイヤーがある場合はクロスフェードの最中なので、次を要求する必要はない。
+            if (!NowPlaying())
+            {
+                NextTrackRequested?.Invoke();
+                Console.WriteLine("NextTrackRequested");
+            }
         }
 
         public void Update(double deltaTimeSeconds)
@@ -60,6 +74,11 @@ namespace MusicerChord.Core
         public void StopAll()
         {
             Console.WriteLine("StopAll(v2)");
+        }
+
+        private bool NowPlaying()
+        {
+            return activePlayers.Any();
         }
     }
 }
