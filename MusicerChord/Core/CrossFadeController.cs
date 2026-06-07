@@ -1,4 +1,5 @@
 ﻿using MusicerChord.Models;
+using MusicerChord.Utils;
 
 namespace MusicerChord.Core
 {
@@ -23,13 +24,29 @@ namespace MusicerChord.Core
             this.playerA = playerA ?? throw new ArgumentNullException(nameof(playerA));
             this.playerB = playerB ?? throw new ArgumentNullException(nameof(playerB));
 
+            playerA.PlaybackStopped += OnPlaybackStopped;
+            playerB.PlaybackStopped += OnPlaybackStopped;
+
             // 初期状態はPlayerAをメインに設定
             activePlayer = this.playerA;
             fadingOutPlayer = this.playerB;
         }
 
-        // 次の曲への切り替え要求を通知するイベント（外部のプレイリスト管理者がこれをフックして Play() を呼ぶ）
-        public event Action CrossfadeTimingReached;
+        private void OnPlaybackStopped(object sender, EventArgs e)
+        {
+            var p1 = sender as ISoundPlayer;
+            var p2 = p1 == playerA ? playerB : playerA;
+
+            p1?.UpdateItemState();
+            p2?.UpdateItemState();
+
+            if (!p1!.IsPlaying && !p2!.IsPlaying)
+            {
+                NextTrackRequested?.Invoke();
+            }
+        }
+
+        public event Action NextTrackRequested;
 
         public double CrossfadeDurationSeconds { get; set; } = 10.0;
 
@@ -69,13 +86,16 @@ namespace MusicerChord.Core
             }
             else
             {
+                var isCurrentlyPlaying = activePlayer.IsPlaying;
+
                 // --- クロスフェード無効（初回再生、または曲が短すぎる場合） ---
                 StopAll();
 
                 activePlayer.Volume = 1.0f;
 
-                // 短すぎる曲の場合は、オプションを完全無視して0秒から全編再生
-                var actualStart = canCrossfade ? StartSeconds : 0.0;
+                // 「今再生中で、かつクロスフェード可能な曲」の時だけ StartSeconds を適用する。
+                // すでに再生が止まっていればどんな場合でも 0 秒から再生する。
+                var actualStart = (isCurrentlyPlaying && canCrossfade) ? StartSeconds : 0.0;
                 activePlayer.Play(newItem, actualStart);
             }
         }
@@ -132,7 +152,7 @@ namespace MusicerChord.Core
                     if (currentMs >= triggerThresholdMs)
                     {
                         // 自動で次の曲へ移行するためのイベントなどを発火させる（今回はタイミング検知まで）
-                        OnCrossfadeTimingReached();
+                        OnNextTrackRequested();
                     }
                 }
             }
@@ -168,9 +188,9 @@ namespace MusicerChord.Core
             isCrossfading = false;
         }
 
-        protected virtual void OnCrossfadeTimingReached()
+        protected virtual void OnNextTrackRequested()
         {
-            CrossfadeTimingReached?.Invoke();
+            NextTrackRequested?.Invoke();
         }
     }
 }

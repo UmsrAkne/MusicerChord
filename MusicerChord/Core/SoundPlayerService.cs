@@ -12,27 +12,25 @@ namespace MusicerChord.Core
     public class SoundPlayerService
     {
         private readonly DispatcherTimer timer = new ();
+        private readonly int updateIntervalMs = 100;
+
         private int currentPlayingIndex;
+        private DateTime lastUpdateTime = DateTime.Now;
 
         public SoundPlayerService()
         {
             var p1 = new SoundPlayer();
             var p2 = new SoundPlayer();
             CrossfadeController = new CrossfadeController(p1, p2);
-            CrossfadeController.CrossfadeTimingReached += () =>
-            {
-                if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
-                {
-                    return;
-                }
 
-                CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
-            };
+            CrossfadeController.NextTrackRequested += PlayNext;
 
-            timer.Interval = TimeSpan.FromMilliseconds(100);
-            timer.Tick += (sender, args) =>
+            timer.Interval = TimeSpan.FromMilliseconds(updateIntervalMs);
+            timer.Tick += (_, _) =>
             {
-                CrossfadeController.Update(0.1);
+                var now = DateTime.Now;
+                CrossfadeController.Update((now - lastUpdateTime).TotalSeconds);
+                lastUpdateTime = now;
             };
         }
 
@@ -53,6 +51,17 @@ namespace MusicerChord.Core
             currentPlayingIndex = 0;
             CrossfadeController.StopAll();
             timer.Stop();
+        }
+
+        private void PlayNext()
+        {
+            if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
+            {
+                return;
+            }
+
+            currentPlayingIndex = currentPlayingIndex >= SoundPlaybackItems.Count - 1 ? 0 : currentPlayingIndex;
+            CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
         }
     }
 }

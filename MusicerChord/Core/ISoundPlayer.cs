@@ -5,6 +5,8 @@ namespace MusicerChord.Core
 {
     public interface ISoundPlayer
     {
+        event EventHandler PlaybackStopped;
+
         /// <summary>
         /// 音量（0.0 ～ 1.0）を取得または設定します。
         /// </summary>
