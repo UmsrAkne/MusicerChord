@@ -19,25 +19,9 @@ namespace MusicerChord.Core
             var p1 = new SoundPlayer();
             var p2 = new SoundPlayer();
             CrossfadeController = new CrossfadeController(p1, p2);
-            CrossfadeController.CrossfadeTimingReached += () =>
-            {
-                if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
-                {
-                    return;
-                }
 
-                CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
-            };
-
-            CrossfadeController.NextTrackRequested += () =>
-            {
-                if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
-                {
-                    return;
-                }
-
-                CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
-            };
+            CrossfadeController.CrossfadeTimingReached += PlayNext;
+            CrossfadeController.NextTrackRequested += PlayNext;
 
             timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Tick += (sender, args) =>
@@ -63,6 +47,17 @@ namespace MusicerChord.Core
             currentPlayingIndex = 0;
             CrossfadeController.StopAll();
             timer.Stop();
+        }
+
+        private void PlayNext()
+        {
+            if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
+            {
+                return;
+            }
+
+            currentPlayingIndex = currentPlayingIndex >= SoundPlaybackItems.Count - 1 ? 0 : currentPlayingIndex;
+            CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
         }
     }
 }
