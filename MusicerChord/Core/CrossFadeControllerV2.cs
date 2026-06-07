@@ -7,19 +7,13 @@ namespace MusicerChord.Core
 {
     public class CrossFadeControllerV2 : ICrossfadeController
     {
+        private readonly ISoundPlayerFactory soundPlayerFactory;
         private List<ISoundPlayer> players;
         private List<ISoundPlayer> activePlayers = new ();
 
-        public CrossFadeControllerV2(ISoundPlayer p1, ISoundPlayer p2, ISoundPlayer p3)
+        public CrossFadeControllerV2(ISoundPlayerFactory factory)
         {
-            players = new List<ISoundPlayer>() { p1, p2, p3, };
-            foreach (var soundPlayer in players)
-            {
-                soundPlayer.PlaybackStopped += (_, _) =>
-                {
-                    NextTrackRequested?.Invoke();
-                };
-            }
+            soundPlayerFactory = factory;
         }
 
         public event Action NextTrackRequested;
@@ -32,8 +26,10 @@ namespace MusicerChord.Core
 
         public void Play(SoundPlaybackItem newItem)
         {
-            var toActivePlayer = MoveToActivePlayer();
+            var toActivePlayer = soundPlayerFactory.Create();
+            toActivePlayer.PlaybackStopped += (_, _) => { NextTrackRequested?.Invoke(); };
             toActivePlayer.Play(newItem);
+            activePlayers.Add(toActivePlayer);
         }
 
         public void Update(double deltaTimeSeconds)
@@ -64,14 +60,6 @@ namespace MusicerChord.Core
         public void StopAll()
         {
             Console.WriteLine("StopAll(v2)");
-        }
-
-        private ISoundPlayer MoveToActivePlayer()
-        {
-            var p = players.FirstOrDefault();
-            activePlayers.Add(p);
-            players.Remove(p);
-            return p;
         }
     }
 }

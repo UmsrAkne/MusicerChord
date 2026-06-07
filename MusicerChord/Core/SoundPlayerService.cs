@@ -19,11 +19,7 @@ namespace MusicerChord.Core
 
         public SoundPlayerService()
         {
-            var p1 = new SoundPlayer();
-            var p2 = new SoundPlayer();
-            var p3 = new SoundPlayer();
-            CrossfadeController = new CrossFadeControllerV2(p1, p2, p3);
-
+            CrossfadeController = new CrossFadeControllerV2(new SoundPlayerFactory());
             CrossfadeController.NextTrackRequested += PlayNext;
 
             timer.Interval = TimeSpan.FromMilliseconds(updateIntervalMs);
