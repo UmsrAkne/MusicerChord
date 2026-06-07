@@ -29,7 +29,7 @@ namespace MusicerChord.Core
             timer.Tick += (_, _) =>
             {
                 var now = DateTime.Now;
-                CrossfadeController.Update((now - lastUpdateTime).Milliseconds);
+                CrossfadeController.Update((now - lastUpdateTime).TotalSeconds);
                 lastUpdateTime = now;
             };
         }
