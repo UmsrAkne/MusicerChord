@@ -46,9 +46,6 @@ namespace MusicerChord.Core
             }
         }
 
-        // 次の曲への切り替え要求を通知するイベント（外部のプレイリスト管理者がこれをフックして Play() を呼ぶ）
-        public event Action CrossfadeTimingReached;
-
         public event Action NextTrackRequested;
 
         public double CrossfadeDurationSeconds { get; set; } = 10.0;
@@ -155,7 +152,7 @@ namespace MusicerChord.Core
                     if (currentMs >= triggerThresholdMs)
                     {
                         // 自動で次の曲へ移行するためのイベントなどを発火させる（今回はタイミング検知まで）
-                        OnCrossfadeTimingReached();
+                        OnNextTrackRequested();
                     }
                 }
             }
@@ -191,9 +188,9 @@ namespace MusicerChord.Core
             isCrossfading = false;
         }
 
-        protected virtual void OnCrossfadeTimingReached()
+        protected virtual void OnNextTrackRequested()
         {
-            CrossfadeTimingReached?.Invoke();
+            NextTrackRequested?.Invoke();
         }
     }
 }

@@ -23,7 +23,6 @@ namespace MusicerChord.Core
             var p2 = new SoundPlayer();
             CrossfadeController = new CrossfadeController(p1, p2);
 
-            CrossfadeController.CrossfadeTimingReached += PlayNext;
             CrossfadeController.NextTrackRequested += PlayNext;
 
             timer.Interval = TimeSpan.FromMilliseconds(updateIntervalMs);
