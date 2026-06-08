@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Threading;
-using MusicerChord.Models;
 
 namespace MusicerChord.Core
 {
@@ -14,7 +11,6 @@ namespace MusicerChord.Core
         private readonly DispatcherTimer timer = new ();
         private readonly int updateIntervalMs = 100;
 
-        private int currentPlayingIndex;
         private DateTime lastUpdateTime = DateTime.Now;
 
         public SoundPlayerService()
@@ -31,51 +27,53 @@ namespace MusicerChord.Core
             };
         }
 
-        public List<SoundPlaybackItem> SoundPlaybackItems { get; set; }
+        public SoundPlaylist SoundPlaylist { get; set; }
 
         private ICrossfadeController CrossfadeController { get; set; }
 
         public void Play()
         {
-            currentPlayingIndex = 0;
+            if (SoundPlaylist is not { HasItems: true, })
+            {
+                return;
+            }
+
             timer.Start();
             CrossfadeController.StopAll();
-            CrossfadeController.Play(SoundPlaybackItems[0]);
+
+            var firstItem = SoundPlaylist.ResetToFirst();
+            CrossfadeController.Play(firstItem);
         }
 
         public void Stop()
         {
-            currentPlayingIndex = 0;
+            SoundPlaylist.ResetToFirst();
             CrossfadeController.StopAll();
             timer.Stop();
         }
 
         private void PlayNext()
         {
-            if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
+            if (SoundPlaylist == null || !SoundPlaylist.HasItems)
             {
                 return;
             }
 
-            var oldIndex = currentPlayingIndex;
-            currentPlayingIndex = currentPlayingIndex >= SoundPlaybackItems.Count - 1 ? -1 : currentPlayingIndex;
-            var item = SoundPlaybackItems[++currentPlayingIndex];
+            // 1. 次のアイテムを事前にチェック（この時点ではインデックスは進まない）
+            var nextItem = SoundPlaylist.PeekNext();
 
             if (!CrossfadeController.IsPlaying)
             {
-                CrossfadeController.Play(item);
-                Console.WriteLine($"PlayNext index: {currentPlayingIndex}");
+                CrossfadeController.Play(nextItem);
+                SoundPlaylist.MoveNext();
                 return;
             }
 
-            if (CrossfadeController.CanExecuteCrossfade(item))
+            if (CrossfadeController.CanExecuteCrossfade(nextItem))
             {
-                CrossfadeController.Play(item);
-                Console.WriteLine($"PlayNext index: {currentPlayingIndex}");
-                return;
+                CrossfadeController.Play(nextItem);
+                SoundPlaylist.MoveNext();
             }
-
-            currentPlayingIndex = oldIndex;
         }
     }
 }

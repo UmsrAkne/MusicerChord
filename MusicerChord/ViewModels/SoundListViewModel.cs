@@ -58,7 +58,7 @@ namespace MusicerChord.ViewModels
 
             // 2. 画面とプレイヤーサービスに即座にセット
             SoundFiles = new ObservableCollection<SoundFile>(list);
-            playerService.SoundPlaybackItems = new List<SoundPlaybackItem>(SoundFiles.Select(f => new SoundPlaybackItem(f)));
+            playerService.SoundPlaylist = new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f)));
 
             // 3. バックグラウンドで非同期に再生時間をロード
             // await しますが、UIスレッドをブロックしないように Task.Run で別スレッドに逃がします
