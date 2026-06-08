@@ -15,7 +15,7 @@ namespace MusicerChord.ViewModels
 
         private ISoundContainer selectedContainer;
 
-        public event Action<ISoundContainer> SoundContainerOpened ;
+        public event Action<ISoundContainer> SoundContainerOpened;
 
         public ObservableCollection<ISoundContainer> SoundContainers
         {

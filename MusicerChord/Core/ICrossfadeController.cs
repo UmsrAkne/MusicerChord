@@ -18,6 +18,7 @@ namespace MusicerChord.Core
         /// <summary>
         /// 新しい曲を再生します。すでに再生中の曲がある場合はクロスフェードを試みます。
         /// </summary>
+        /// <param name="newItem">再生したいアイテム</param>
         void Play(SoundPlaybackItem newItem);
 
         /// <summary>
@@ -30,6 +31,8 @@ namespace MusicerChord.Core
         /// <summary>
         /// 指定されたアイテムが、設定されたクロスフェード要素の合計時間を満たしているか判定します。
         /// </summary>
+        /// <param name="item">判定対象のアイテム。</param>
+        /// <returns>判定結果。</returns>
         bool CanExecuteCrossfade(SoundPlaybackItem item);
 
         void StopAll();

@@ -8,8 +8,7 @@ namespace MusicerChord.Core
     public class CrossFadeControllerV2 : ICrossfadeController
     {
         private readonly ISoundPlayerFactory soundPlayerFactory;
-        private List<ISoundPlayer> players;
-        private Queue<ISoundPlayer> activePlayers = new ();
+        private readonly Queue<ISoundPlayer> activePlayers = new ();
 
         public CrossFadeControllerV2(ISoundPlayerFactory factory)
         {
@@ -28,29 +27,11 @@ namespace MusicerChord.Core
 
         public void Play(SoundPlaybackItem newItem)
         {
-            Console.WriteLine($"Play(v2) {newItem.SoundFile.FileName}");
             var toActivePlayer = soundPlayerFactory.Create();
             toActivePlayer.PlaybackStopped += OnPlaybackStopped;
 
             toActivePlayer.Play(newItem);
             activePlayers.Enqueue(toActivePlayer);
-        }
-
-        private void OnPlaybackStopped(object sender, EventArgs e)
-        {
-            var p = activePlayers.Dequeue();
-            p.PlaybackStopped -= OnPlaybackStopped;
-
-            Console.WriteLine($"----");
-            Console.WriteLine("OnPlaybackStopped");
-
-            // 他に再生中のプレイヤーがある場合はクロスフェードの最中なので、次を要求する必要はない。
-            if (!NowPlaying())
-            {
-                NextTrackRequested?.Invoke();
-                Console.WriteLine($"----");
-                Console.WriteLine("NextTrackRequested (Triggered by PlaybackStopped)");
-            }
         }
 
         public void Update(double deltaTimeSeconds)
@@ -81,12 +62,6 @@ namespace MusicerChord.Core
                 {
                     activePlayer.HasNextTrackRequested = true;
                     NextTrackRequested?.Invoke();
-
-                    Console.WriteLine($"----");
-                    Console.WriteLine($"activePlayer.CurrentItem: {activePlayer.CurrentItem?.SoundFile?.FileName}");
-                    Console.WriteLine($"activePlayer.CurrentItem.DurationMs: {activePlayer.CurrentItem?.SoundFile?.DurationMs}");
-
-                    Console.WriteLine("NextTrackRequested (Triggered by Update)");
                 }
             }
         }
@@ -114,6 +89,18 @@ namespace MusicerChord.Core
         public void StopAll()
         {
             Console.WriteLine("StopAll(v2)");
+        }
+
+        private void OnPlaybackStopped(object sender, EventArgs e)
+        {
+            var p = activePlayers.Dequeue();
+            p.PlaybackStopped -= OnPlaybackStopped;
+
+            // 他に再生中のプレイヤーがある場合はクロスフェードの最中なので、次を要求する必要はない。
+            if (!NowPlaying())
+            {
+                NextTrackRequested?.Invoke();
+            }
         }
 
         private bool NowPlaying()
