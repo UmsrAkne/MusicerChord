@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Threading;
+using MusicerChord.Databases;
 using MusicerChord.Models;
 
 namespace MusicerChord.Core
@@ -13,16 +12,14 @@ namespace MusicerChord.Core
     {
         private readonly DispatcherTimer timer = new ();
         private readonly int updateIntervalMs = 100;
+        private readonly SoundFileService soundFileService;
 
-        private int currentPlayingIndex;
         private DateTime lastUpdateTime = DateTime.Now;
 
-        public SoundPlayerService()
+        public SoundPlayerService(SoundFileService soundFileService)
         {
-            var p1 = new SoundPlayer();
-            var p2 = new SoundPlayer();
-            CrossfadeController = new CrossfadeController(p1, p2);
-
+            this.soundFileService = soundFileService;
+            CrossfadeController = new CrossFadeControllerV2(new SoundPlayerFactory());
             CrossfadeController.NextTrackRequested += PlayNext;
 
             timer.Interval = TimeSpan.FromMilliseconds(updateIntervalMs);
@@ -34,34 +31,83 @@ namespace MusicerChord.Core
             };
         }
 
-        public List<SoundPlaybackItem> SoundPlaybackItems { get; set; }
+        public SoundPlaylist SoundPlaylist { get; set; }
 
-        private CrossfadeController CrossfadeController { get; set; }
+        public ICrossfadeController CrossfadeController { get; set; }
 
         public void Play()
         {
-            currentPlayingIndex = 0;
+            if (SoundPlaylist is not { HasItems: true, })
+            {
+                return;
+            }
+
             timer.Start();
             CrossfadeController.StopAll();
-            CrossfadeController.Play(SoundPlaybackItems[0]);
+
+            var firstItem = SoundPlaylist.ResetToFirst();
+            CrossfadeController.Play(firstItem, CrossfadeController.Volume);
+
+            RecordPlayHistory(firstItem);
         }
 
         public void Stop()
         {
-            currentPlayingIndex = 0;
+            SoundPlaylist.ResetToFirst();
             CrossfadeController.StopAll();
             timer.Stop();
         }
 
         private void PlayNext()
         {
-            if (SoundPlaybackItems == null || !SoundPlaybackItems.Any())
+            if (SoundPlaylist == null || !SoundPlaylist.HasItems)
             {
                 return;
             }
 
-            currentPlayingIndex = currentPlayingIndex >= SoundPlaybackItems.Count - 1 ? 0 : currentPlayingIndex;
-            CrossfadeController.Play(SoundPlaybackItems[++currentPlayingIndex]);
+            // 1. 次のアイテムを事前にチェック（この時点ではインデックスは進まない）
+            var nextItem = SoundPlaylist.PeekNext();
+
+            if (!CrossfadeController.IsPlaying)
+            {
+                CrossfadeController.Play(nextItem, CrossfadeController.Volume);
+                SoundPlaylist.MoveNext();
+                RecordPlayHistory(nextItem);
+                return;
+            }
+
+            if (CrossfadeController.CanExecuteCrossfade(nextItem))
+            {
+                CrossfadeController.Play(nextItem, 0);
+                RecordPlayHistory(nextItem);
+                SoundPlaylist.MoveNext();
+            }
+        }
+
+        private void RecordPlayHistory(SoundPlaybackItem item)
+        {
+            if (item?.SoundFile == null)
+            {
+                return;
+            }
+
+            // 投げっぱなしだが、エラーだけは受け取れるようにする。
+            FireAndForget(item.SoundFile.Id);
+            item.SoundFile.PlayCount++;
+            return;
+
+            async void FireAndForget(int soundFileId)
+            {
+                try
+                {
+                    await soundFileService.RecordListenHistoryAsync(soundFileId);
+                }
+                catch (Exception ex)
+                {
+                    // ここでログを吐く（例: Microsoft.Extensions.Logging など）
+                    Console.WriteLine($"履歴の記録に失敗しました: {ex.Message}");
+                }
+            }
         }
     }
 }

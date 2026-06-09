@@ -8,6 +8,7 @@ namespace MusicerChord.Models
     {
         private PlaybackState playbackState;
         private bool isPlaying;
+        private TimeSpan currentPlaybackTime;
 
         public SoundPlaybackItem(SoundFile soundFile)
         {
@@ -22,7 +23,11 @@ namespace MusicerChord.Models
             set => SetProperty(ref playbackState, value);
         }
 
-        public TimeSpan CurrentPlaybackTime { get; set; }
+        public TimeSpan CurrentPlaybackTime
+        {
+            get => currentPlaybackTime;
+            set => SetProperty(ref currentPlaybackTime, value);
+        }
 
         public SoundFile SoundFile { get; set; }
     }

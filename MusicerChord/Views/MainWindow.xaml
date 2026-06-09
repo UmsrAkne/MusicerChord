@@ -11,7 +11,8 @@
     Title="{Binding Title}"
     Width="1200"
     Height="720"
-    d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
+    d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel,
+                                     IsDesignTimeCreatable=True}"
     d:DesignHeight="300"
     d:DesignWidth="800"
     prism:ViewModelLocator.AutoWireViewModel="True"
@@ -60,12 +61,34 @@
             x:Name="MusicList"
             Grid.Row="1"
             Grid.Column="1"
+            HorizontalContentAlignment="Stretch"
             ItemsSource="{Binding SoundListViewModel.SoundFiles}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:SoundFile}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding FileNameWithoutExtension}" />
-                    </StackPanel>
+                    <Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Grid.Column="0"
+                                Width="30"
+                                Text="{Binding PlayCount}" />
+
+                            <TextBlock Grid.Column="1" Text="{Binding FileNameWithoutExtension}" />
+
+                            <TextBlock
+                                Grid.Column="2"
+                                Width="100"
+                                HorizontalAlignment="Center"
+                                Text="{Binding DurationText}" />
+
+                        </Grid>
+
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -74,12 +97,33 @@
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="2">
-            <StackPanel Orientation="Horizontal">
-                <Button
-                    Width="100"
-                    HorizontalAlignment="Left"
-                    Command="{Binding SoundListViewModel.PlayCommand}"
-                    Content="Play" />
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.CurrentSoundName}" />
+                    <TextBlock Margin="10,0" Text="/" />
+                    <TextBlock Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.CurrentPlaybackTimeText}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button
+                        Width="100"
+                        HorizontalAlignment="Left"
+                        Command="{Binding SoundListViewModel.PlayCommand}"
+                        Content="Play" />
+
+                    <TextBlock
+                        Margin="40,0,5,0"
+                        VerticalAlignment="Center"
+                        Text="Volume: " />
+
+                    <Slider
+                        Width="250"
+                        Margin="10,0"
+                        VerticalAlignment="Center"
+                        Maximum="1.0"
+                        Minimum="0"
+                        Value="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.Volume}" />
+                </StackPanel>
+
             </StackPanel>
         </Border>
 

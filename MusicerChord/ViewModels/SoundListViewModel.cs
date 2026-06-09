@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using MusicerChord.Core;
+using MusicerChord.Databases;
 using MusicerChord.Models;
 using MusicerChord.Utils;
-using NAudio.Wave;
 using Prism.Commands;
 using Prism.Mvvm;
 
@@ -17,16 +14,21 @@ namespace MusicerChord.ViewModels
     // ReSharper disable once ClassNeverInstantiated.Global
     public class SoundListViewModel : BindableBase
     {
-        private readonly SoundPlayerService playerService;
         private readonly SoundPathResolver soundPathResolver;
+        private readonly SoundFileService soundFileService;
         private ObservableCollection<SoundFile> soundFiles = new ();
 
-        public SoundListViewModel(SoundPlayerService playerService)
+        public SoundListViewModel(SoundPlayerService playerService, SoundFileService soundFileService, bool isDesignMode = false)
         {
-            this.playerService = playerService;
+            SoundPlayerService = playerService;
+            this.soundFileService = soundFileService;
 
-            var appSettings = AppSettings.Load(AppSettings.SettingFilePath);
-            soundPathResolver = new SoundPathResolver(appSettings.RootPath);
+            // IO処理が含まれていると、XAMLプレビューが無効になるため。
+            if (!isDesignMode)
+            {
+                var appSettings = AppSettings.Load(AppSettings.SettingFilePath);
+                soundPathResolver = new SoundPathResolver(appSettings.RootPath);
+            }
         }
 
         public ObservableCollection<SoundFile> SoundFiles
@@ -35,19 +37,21 @@ namespace MusicerChord.ViewModels
             set => SetProperty(ref soundFiles, value);
         }
 
+        public SoundPlayerService SoundPlayerService { get; set; }
+
         public DelegateCommand PlayCommand => new DelegateCommand(() =>
         {
-            playerService.Play();
+            SoundPlayerService.Play();
         });
 
         public DelegateCommand StopCommand => new DelegateCommand(() =>
         {
-            playerService.Stop();
+            SoundPlayerService.Stop();
         });
 
         public async Task UpdateSoundListAsync(string objAbsolutePath)
         {
-            // 1. まずはファイル名のリストだけ作成。Duration などのデータは読まない。
+            // 1. まずはファイル名のリストだけ高速に作成（Durationはまだ0）
             var list = Directory.GetFiles(objAbsolutePath, "*.mp3", SearchOption.AllDirectories)
                 .Select(p => new SoundFile()
                 {
@@ -56,52 +60,16 @@ namespace MusicerChord.ViewModels
                 })
                 .ToList();
 
-            // 2. 画面とプレイヤーサービスに即座にセット
+            // 2. 画面とプレイヤーサービスに即座にセット（ユーザーを待たせない）
             SoundFiles = new ObservableCollection<SoundFile>(list);
-            playerService.SoundPlaybackItems = new List<SoundPlaybackItem>(SoundFiles.Select(f => new SoundPlaybackItem(f)));
+            SoundPlayerService.SoundPlaylist = new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f)));
 
-            // 3. バックグラウンドで非同期に再生時間をロード
-            // await しますが、UIスレッドをブロックしないように Task.Run で別スレッドに逃がします
-            await Task.Run(() =>
+            // 3. 重いデータはバックグラウンドで後からロード
+            await Task.Run(async () =>
             {
-                foreach (var file in list)
-                {
-                    // 各ファイルの時間をロード（将来ここは「DBにあればDBから、なければファイルから」になる）
-                    var duration = LoadDuration(file.FullPath);
-
-                    // ★ WPF / UIスレッドへ値を書き戻す処理
-                    // （ObservableCollection や PropertyChanged を安全に同期するため、
-                    // 必要に応じて Application.Current.Dispatcher.Invoke などを挟むとより安全です）
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        file.DurationMs = (int)duration;
-                    });
-                }
+                // サービス層を呼び出す。DB検索（超高速）＋未登録分のみファイル解析（重い）
+                await soundFileService.InitializeFileMetadataAsync(list);
             });
-        }
-
-        private double LoadDuration(string fullPath)
-        {
-            try
-            {
-                // ファイルが存在しない場合はスルー
-                if (!File.Exists(fullPath))
-                {
-                    return 0;
-                }
-
-                // AudioFileReader はメタデータではなく、オーディオストリームそのものを解析します。
-                // ※内部でファイルを開くため、激重処理（I/O負荷＋デコード負荷）になります。
-                using var reader = new AudioFileReader(fullPath);
-                return reader.TotalTime.TotalMilliseconds;
-            }
-            catch (Exception ex)
-            {
-                // 読み込みエラー（ファイル破損やロックなど）が発生した場合は、
-                // ログを吐くなどして安全に 0 を返す
-                System.Diagnostics.Debug.WriteLine($"NAudioによる時間取得に失敗: {fullPath} - {ex.Message}");
-                return 0;
-            }
         }
     }
 }

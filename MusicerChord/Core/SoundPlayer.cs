@@ -35,9 +35,8 @@ namespace MusicerChord.Core
 
         public SoundPlaybackItem CurrentItem { get => currentItem; private set => currentItem = value; }
 
-        /// <summary>
-        /// 対象のアイテムを読み込んで再生します。既に再生中の場合は停止して切り替えます。
-        /// </summary>
+        public bool HasNextTrackRequested { get; set; }
+
         public void Play(SoundPlaybackItem item, double startSeconds = 0)
         {
             if (item?.SoundFile?.FullPath == null || !File.Exists(item.SoundFile.FullPath))
