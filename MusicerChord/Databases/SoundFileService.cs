@@ -34,7 +34,7 @@ namespace MusicerChord.Databases
             await listenHistoryRepository.AddAsync(history);
         }
 
-        public async Task FillOrFetchDurationsAsync(IEnumerable<SoundFile> soundFiles)
+        public async Task InitializeFileMetadataAsync(IEnumerable<SoundFile> soundFiles)
         {
             if (soundFiles == null)
             {
@@ -68,6 +68,7 @@ namespace MusicerChord.Databases
                     // DBにデータがあった場合
                     file.Id = dbFile.Id;
                     file.DurationMs = dbFile.DurationMs;
+                    file.PlayCount = dbFile.PlayCount;
                     file.IsSkip = dbFile.IsSkip; // ついでに他の永続化パラメーターも同期
                 }
                 else

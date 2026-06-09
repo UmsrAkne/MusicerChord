@@ -68,7 +68,7 @@ namespace MusicerChord.ViewModels
             await Task.Run(async () =>
             {
                 // サービス層を呼び出す。DB検索（超高速）＋未登録分のみファイル解析（重い）
-                await soundFileService.FillOrFetchDurationsAsync(list);
+                await soundFileService.InitializeFileMetadataAsync(list);
             });
         }
     }

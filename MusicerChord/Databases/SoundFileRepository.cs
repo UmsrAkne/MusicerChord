@@ -62,6 +62,14 @@ namespace MusicerChord.Databases
 
             return await context.SoundFiles
                 .Where(f => pathList.Contains(f.RelativePath))
+                .Select(f => new SoundFile
+                {
+                    Id = f.Id,
+                    RelativePath = f.RelativePath,
+                    DurationMs = f.DurationMs,
+                    IsSkip = f.IsSkip,
+                    PlayCount = context.ListenHistories.Count(h => h.SoundFileId == f.Id),
+                })
                 .ToListAsync();
         }
 
