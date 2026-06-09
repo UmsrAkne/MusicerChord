@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows.Threading;
+using MusicerChord.Databases;
+using MusicerChord.Models;
 
 namespace MusicerChord.Core
 {
@@ -10,11 +12,13 @@ namespace MusicerChord.Core
     {
         private readonly DispatcherTimer timer = new ();
         private readonly int updateIntervalMs = 100;
+        private readonly SoundFileService soundFileService;
 
         private DateTime lastUpdateTime = DateTime.Now;
 
-        public SoundPlayerService()
+        public SoundPlayerService(SoundFileService soundFileService)
         {
+            this.soundFileService = soundFileService;
             CrossfadeController = new CrossFadeControllerV2(new SoundPlayerFactory());
             CrossfadeController.NextTrackRequested += PlayNext;
 
@@ -43,6 +47,8 @@ namespace MusicerChord.Core
 
             var firstItem = SoundPlaylist.ResetToFirst();
             CrossfadeController.Play(firstItem, CrossfadeController.Volume);
+
+            RecordPlayHistory(firstItem);
         }
 
         public void Stop()
@@ -66,13 +72,41 @@ namespace MusicerChord.Core
             {
                 CrossfadeController.Play(nextItem, CrossfadeController.Volume);
                 SoundPlaylist.MoveNext();
+                RecordPlayHistory(nextItem);
                 return;
             }
 
             if (CrossfadeController.CanExecuteCrossfade(nextItem))
             {
                 CrossfadeController.Play(nextItem, 0);
+                RecordPlayHistory(nextItem);
                 SoundPlaylist.MoveNext();
+            }
+        }
+
+        private void RecordPlayHistory(SoundPlaybackItem item)
+        {
+            if (item?.SoundFile == null)
+            {
+                return;
+            }
+
+            // 投げっぱなしだが、エラーだけは受け取れるようにする。
+            FireAndForget(item.SoundFile.Id);
+            item.SoundFile.PlayCount++;
+            return;
+
+            async void FireAndForget(int soundFileId)
+            {
+                try
+                {
+                    await soundFileService.RecordListenHistoryAsync(soundFileId);
+                }
+                catch (Exception ex)
+                {
+                    // ここでログを吐く（例: Microsoft.Extensions.Logging など）
+                    Console.WriteLine($"履歴の記録に失敗しました: {ex.Message}");
+                }
             }
         }
     }

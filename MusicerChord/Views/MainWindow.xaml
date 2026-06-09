@@ -68,13 +68,20 @@
                     <Border>
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="{Binding FileNameWithoutExtension}" />
                             <TextBlock
-                                Grid.Column="1"
+                                Grid.Column="0"
+                                Width="30"
+                                Text="{Binding PlayCount}" />
+
+                            <TextBlock Grid.Column="1" Text="{Binding FileNameWithoutExtension}" />
+
+                            <TextBlock
+                                Grid.Column="2"
                                 Width="100"
                                 HorizontalAlignment="Center"
                                 Text="{Binding DurationText}" />

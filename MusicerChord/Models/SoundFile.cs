@@ -11,6 +11,7 @@ namespace MusicerChord.Models
     public class SoundFile : BindableBase
     {
         private int durationMs;
+        private int playCount;
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -46,7 +47,7 @@ namespace MusicerChord.Models
         public bool IsSkip { get; set; }
 
         [NotMapped]
-        public int PlayCount { get; set; }
+        public int PlayCount { get => playCount; set => SetProperty(ref playCount, value); }
 
         [NotMapped]
         public string FullPath { get; set; }
