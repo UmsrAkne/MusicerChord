@@ -64,16 +64,6 @@ namespace MusicerChord.ViewModels
             {
                 // サービス層を呼び出す。DB検索（超高速）＋未登録分のみファイル解析（重い）
                 await soundFileService.FillOrFetchDurationsAsync(list);
-
-                // 4. WPFのUIスレッドへ値を書き戻す処理
-                // Application.Current.Dispatcher.Invoke(() =>
-                // {
-                //     foreach (var file in list)
-                //     {
-                //         // セッター内部で PropertyChanged が発生するため、再代入するだけでUIに通知がいきます
-                //         file.DurationMs = file.DurationMs;
-                //     }
-                // });
             });
         }
     }

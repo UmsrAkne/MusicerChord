@@ -60,12 +60,27 @@
             x:Name="MusicList"
             Grid.Row="1"
             Grid.Column="1"
+            HorizontalContentAlignment="Stretch"
             ItemsSource="{Binding SoundListViewModel.SoundFiles}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:SoundFile}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding FileNameWithoutExtension}" />
-                    </StackPanel>
+                    <Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="{Binding FileNameWithoutExtension}" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Width="100"
+                                HorizontalAlignment="Center"
+                                Text="{Binding DurationText}" />
+
+                        </Grid>
+
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

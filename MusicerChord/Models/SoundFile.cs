@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,20 @@ namespace MusicerChord.Models
         public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(RelativePath);
 
         [Required]
-        public int DurationMs { get => durationMs; set => SetProperty(ref durationMs, value); }
+        public int DurationMs
+        {
+            get => durationMs;
+            set
+            {
+                if (SetProperty(ref durationMs, value))
+                {
+                    RaisePropertyChanged(nameof(DurationText));
+                }
+            }
+        }
+
+        [NotMapped]
+        public string DurationText => TimeSpan.FromMilliseconds(DurationMs).ToString(@"hh\:mm\:ss");
 
         [Required]
         public bool IsSkip { get; set; }
