@@ -1,24 +1,34 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Prism.Mvvm;
 
 namespace MusicerChord.Models
 {
+    [Index(nameof(RelativePath), IsUnique = true)]
     public class SoundFile : BindableBase
     {
         private int durationMs;
 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        // 例: "Ambient/01_rain.mp3" (ルートが D:\Sound なら、実際は D:\Sound\Ambient\01_rain.mp3)
-        public string RelativePath { get; set; }
+        [Required]
+        [MaxLength(1024)]
+        public string RelativePath { get; set; } // 例: "Ambient/01_rain.mp3" (ルートが D:\Sound なら、実際は D:\Sound\Ambient\01_rain.mp3)
 
+        [NotMapped]
         public string FileName => Path.GetFileName(RelativePath);
 
+        [NotMapped]
         public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(RelativePath);
 
+        [Required]
         public int DurationMs { get => durationMs; set => SetProperty(ref durationMs, value); }
 
+        [Required]
         public bool IsSkip { get; set; }
 
         [NotMapped]
