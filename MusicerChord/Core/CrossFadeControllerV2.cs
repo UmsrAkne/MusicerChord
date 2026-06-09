@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using MusicerChord.Models;
+using Prism.Mvvm;
 
 namespace MusicerChord.Core
 {
-    public class CrossFadeControllerV2 : ICrossfadeController
+    public class CrossFadeControllerV2 : BindableBase, ICrossfadeController
     {
         private readonly ISoundPlayerFactory soundPlayerFactory;
         private readonly Queue<ISoundPlayer> activePlayers = new ();
+        private double volume = 1.0;
 
         public CrossFadeControllerV2(ISoundPlayerFactory factory)
         {
@@ -23,13 +25,16 @@ namespace MusicerChord.Core
 
         public double EndOffsetSeconds { get; set; } = 5.0;
 
+        public double Volume { get => volume; set => SetProperty(ref volume, value); }
+
         public bool IsPlaying => NowPlaying();
 
-        public void Play(SoundPlaybackItem newItem)
+        public void Play(SoundPlaybackItem newItem, double initialVolume = 1)
         {
             var toActivePlayer = soundPlayerFactory.Create();
             toActivePlayer.PlaybackStopped += OnPlaybackStopped;
 
+            toActivePlayer.Volume = (float)initialVolume;
             toActivePlayer.Play(newItem);
             activePlayers.Enqueue(toActivePlayer);
         }
@@ -117,7 +122,7 @@ namespace MusicerChord.Core
             {
                 if (activePlayers.TryPeek(out var singlePlayer))
                 {
-                    singlePlayer.Volume = 1.0f; // または設定されたマスター音量
+                    singlePlayer.Volume = (float)Volume;
                 }
 
                 return;
@@ -143,9 +148,10 @@ namespace MusicerChord.Core
                 var rawProgress = (currentMs - fadeStartMs) / fadeDurationMs;
                 var progress = (float)Math.Clamp(rawProgress, 0.0, 1.0);
 
-                // 音量の適用（線形フェードの場合）
-                oldPlayer.Volume = 1.0f - progress; // 1.0 -> 0.0 へ減少
-                newPlayer.Volume = progress; // 0.0 -> 1.0 へ増加
+                // 音量の適用（マスター音量を基準にフェード）
+                var targetVolume = (float)Volume;
+                oldPlayer.Volume = targetVolume * (1.0f - progress); // Volume -> 0.0 へ減少
+                newPlayer.Volume = targetVolume * progress; // 0.0 -> Volume へ
             }
         }
     }

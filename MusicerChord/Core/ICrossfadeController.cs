@@ -13,13 +13,15 @@ namespace MusicerChord.Core
 
         double EndOffsetSeconds { get; set; }
 
+        public double Volume { get; set; }
+
         bool IsPlaying { get; }
 
         /// <summary>
         /// 新しい曲を再生します。すでに再生中の曲がある場合はクロスフェードを試みます。
         /// </summary>
         /// <param name="newItem">再生したいアイテム</param>
-        void Play(SoundPlaybackItem newItem);
+        void Play(SoundPlaybackItem newItem, double initialVolume = 1.0);
 
         /// <summary>
         /// 定周期（タイマー等）から呼び出される更新処理。

@@ -42,7 +42,7 @@ namespace MusicerChord.Core
             CrossfadeController.StopAll();
 
             var firstItem = SoundPlaylist.ResetToFirst();
-            CrossfadeController.Play(firstItem);
+            CrossfadeController.Play(firstItem, CrossfadeController.Volume);
         }
 
         public void Stop()
@@ -64,14 +64,14 @@ namespace MusicerChord.Core
 
             if (!CrossfadeController.IsPlaying)
             {
-                CrossfadeController.Play(nextItem);
+                CrossfadeController.Play(nextItem, CrossfadeController.Volume);
                 SoundPlaylist.MoveNext();
                 return;
             }
 
             if (CrossfadeController.CanExecuteCrossfade(nextItem))
             {
-                CrossfadeController.Play(nextItem);
+                CrossfadeController.Play(nextItem, 0);
                 SoundPlaylist.MoveNext();
             }
         }
