@@ -14,6 +14,11 @@ namespace MusicerChord.Utils
 
         public static void Log(string message)
         {
+            if (string.IsNullOrEmpty(logFilePath))
+            {
+                logFilePath = Path.Combine(AppContext.BaseDirectory, "log.txt");
+            }
+
             var line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {message}";
 
             Console.WriteLine(line);
