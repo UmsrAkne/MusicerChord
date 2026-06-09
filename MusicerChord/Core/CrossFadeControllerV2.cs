@@ -35,7 +35,11 @@ namespace MusicerChord.Core
             toActivePlayer.PlaybackStopped += OnPlaybackStopped;
 
             toActivePlayer.Volume = (float)initialVolume;
-            toActivePlayer.Play(newItem);
+
+            // 初期ボリューム0 == クロスフェード有効
+            var startSeconds = initialVolume == 0 ? StartSeconds : 0;
+
+            toActivePlayer.Play(newItem, startSeconds);
             activePlayers.Enqueue(toActivePlayer);
         }
 
