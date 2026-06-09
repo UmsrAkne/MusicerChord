@@ -19,13 +19,17 @@ namespace MusicerChord.ViewModels
         private readonly SoundFileService soundFileService;
         private ObservableCollection<SoundFile> soundFiles = new ();
 
-        public SoundListViewModel(SoundPlayerService playerService, SoundFileService soundFileService)
+        public SoundListViewModel(SoundPlayerService playerService, SoundFileService soundFileService, bool isDesignMode = false)
         {
             this.playerService = playerService;
             this.soundFileService = soundFileService;
 
-            var appSettings = AppSettings.Load(AppSettings.SettingFilePath);
-            soundPathResolver = new SoundPathResolver(appSettings.RootPath);
+            // IO処理が含まれていると、XAMLプレビューが無効になるため。
+            if (!isDesignMode)
+            {
+                var appSettings = AppSettings.Load(AppSettings.SettingFilePath);
+                soundPathResolver = new SoundPathResolver(appSettings.RootPath);
+            }
         }
 
         public ObservableCollection<SoundFile> SoundFiles
