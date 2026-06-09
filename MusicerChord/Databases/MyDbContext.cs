@@ -10,6 +10,8 @@ namespace MusicerChord.Databases
     {
         public DbSet<SoundFile> SoundFiles { get; set; }
 
+        public DbSet<ListenHistory> ListenHistories { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
