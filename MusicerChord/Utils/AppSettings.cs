@@ -13,6 +13,8 @@ namespace MusicerChord.Utils
         /// </summary>
         public string RootPath { get; set; } = string.Empty;
 
+        public double Volume { get; set; } = 1.0;
+
         public static AppSettings Load(string filePath)
         {
             if (!File.Exists(filePath))

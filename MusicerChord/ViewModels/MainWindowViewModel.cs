@@ -30,6 +30,8 @@ namespace MusicerChord.ViewModels
             RootPath = setting.RootPath;
 
             SoundListViewModel = soundListViewModel;
+            SoundListViewModel.SoundPlayerService.CrossfadeController.Volume = setting.Volume;
+
             DirectoryTreeViewModel = directoryTreeViewModel;
 
             DirectoryTreeViewModel.SoundContainerOpened += OnSoundContainerOpened;
