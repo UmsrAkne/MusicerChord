@@ -14,14 +14,13 @@ namespace MusicerChord.ViewModels
     // ReSharper disable once ClassNeverInstantiated.Global
     public class SoundListViewModel : BindableBase
     {
-        private readonly SoundPlayerService playerService;
         private readonly SoundPathResolver soundPathResolver;
         private readonly SoundFileService soundFileService;
         private ObservableCollection<SoundFile> soundFiles = new ();
 
         public SoundListViewModel(SoundPlayerService playerService, SoundFileService soundFileService, bool isDesignMode = false)
         {
-            this.playerService = playerService;
+            SoundPlayerService = playerService;
             this.soundFileService = soundFileService;
 
             // IO処理が含まれていると、XAMLプレビューが無効になるため。
@@ -38,14 +37,16 @@ namespace MusicerChord.ViewModels
             set => SetProperty(ref soundFiles, value);
         }
 
+        public SoundPlayerService SoundPlayerService { get; set; }
+
         public DelegateCommand PlayCommand => new DelegateCommand(() =>
         {
-            playerService.Play();
+            SoundPlayerService.Play();
         });
 
         public DelegateCommand StopCommand => new DelegateCommand(() =>
         {
-            playerService.Stop();
+            SoundPlayerService.Stop();
         });
 
         public async Task UpdateSoundListAsync(string objAbsolutePath)
@@ -61,7 +62,7 @@ namespace MusicerChord.ViewModels
 
             // 2. 画面とプレイヤーサービスに即座にセット（ユーザーを待たせない）
             SoundFiles = new ObservableCollection<SoundFile>(list);
-            playerService.SoundPlaylist = new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f)));
+            SoundPlayerService.SoundPlaylist = new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f)));
 
             // 3. 重いデータはバックグラウンドで後からロード
             await Task.Run(async () =>

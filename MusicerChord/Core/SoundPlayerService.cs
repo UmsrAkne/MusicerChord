@@ -29,7 +29,7 @@ namespace MusicerChord.Core
 
         public SoundPlaylist SoundPlaylist { get; set; }
 
-        private ICrossfadeController CrossfadeController { get; set; }
+        public ICrossfadeController CrossfadeController { get; set; }
 
         public void Play()
         {
