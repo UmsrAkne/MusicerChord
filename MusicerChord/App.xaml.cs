@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Microsoft.EntityFrameworkCore;
 using MusicerChord.Databases;
 using MusicerChord.ViewModels;
 using MusicerChord.Views;
@@ -40,7 +41,7 @@ namespace MusicerChord
             context.Database.EnsureDeleted();
             #endif
 
-            context.Database.EnsureCreated();
+            context.Database.Migrate();
         }
     }
 }
