@@ -39,7 +39,7 @@ namespace MusicerChord.ViewModels
 
         public MainWindowViewModel()
         {
-            SoundListViewModel = new SoundListViewModel(null);
+            SoundListViewModel = new SoundListViewModel(null, null);
             DirectoryTreeViewModel = new DirectoryTreeViewModel();
 
             SetupDummyData();

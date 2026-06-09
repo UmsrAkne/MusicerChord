@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using MusicerChord.Core;
+using MusicerChord.Databases;
 using MusicerChord.Models;
 using MusicerChord.Utils;
 using NAudio.Wave;
@@ -18,11 +19,13 @@ namespace MusicerChord.ViewModels
     {
         private readonly SoundPlayerService playerService;
         private readonly SoundPathResolver soundPathResolver;
+        private readonly SoundFileService soundFileService;
         private ObservableCollection<SoundFile> soundFiles = new ();
 
-        public SoundListViewModel(SoundPlayerService playerService)
+        public SoundListViewModel(SoundPlayerService playerService, SoundFileService soundFileService)
         {
             this.playerService = playerService;
+            this.soundFileService = soundFileService;
 
             var appSettings = AppSettings.Load(AppSettings.SettingFilePath);
             soundPathResolver = new SoundPathResolver(appSettings.RootPath);

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using MusicerChord.Databases;
 using MusicerChord.ViewModels;
 using MusicerChord.Views;
 using Prism.Ioc;
@@ -19,6 +20,21 @@ namespace MusicerChord
         {
             containerRegistry.RegisterSingleton<DirectoryTreeViewModel>();
             containerRegistry.RegisterSingleton<SoundListViewModel>();
+
+            // DB クラスの登録
+            containerRegistry.Register<MyDbContext>();
+            containerRegistry.Register<ISoundFileRepository, SoundFileRepository>();
+            containerRegistry.Register<IListenHistoryRepository, ListenHistoryRepository>();
+            containerRegistry.Register<SoundFileService>();
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+
+            // DIコンテナから MyDbContext を取り出して EnsureCreated を実行する
+            using var context = Container.Resolve<MyDbContext>();
+            context.Database.EnsureCreated();
         }
     }
 }
