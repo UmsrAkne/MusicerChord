@@ -34,6 +34,12 @@ namespace MusicerChord
 
             // DIコンテナから MyDbContext を取り出して EnsureCreated を実行する
             using var context = Container.Resolve<MyDbContext>();
+
+            #if DEBUG
+            // デバッグ起動時のみ、毎回DBをリセットして初期化する
+            context.Database.EnsureDeleted();
+            #endif
+
             context.Database.EnsureCreated();
         }
     }
