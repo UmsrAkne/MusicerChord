@@ -15,5 +15,9 @@ namespace MusicerChord.Databases
         Task UpdateAsync(SoundFile soundFile);
 
         Task DeleteAsync(int id);
+
+        Task<IEnumerable<SoundFile>> GetByRelativePathsAsync(IEnumerable<string> relativePaths);
+
+        Task SaveRangeAsync(IEnumerable<SoundFile> soundFiles);
     }
 }
