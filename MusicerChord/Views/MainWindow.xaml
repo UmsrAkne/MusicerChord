@@ -90,25 +90,33 @@
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="2">
-            <StackPanel Orientation="Horizontal">
-                <Button
-                    Width="100"
-                    HorizontalAlignment="Left"
-                    Command="{Binding SoundListViewModel.PlayCommand}"
-                    Content="Play" />
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.CurrentSoundName}" />
+                    <TextBlock Margin="10,0" Text="/" />
+                    <TextBlock Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.CurrentPlaybackTimeText}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button
+                        Width="100"
+                        HorizontalAlignment="Left"
+                        Command="{Binding SoundListViewModel.PlayCommand}"
+                        Content="Play" />
 
-                <TextBlock
-                    Margin="40,0,5,0"
-                    VerticalAlignment="Center"
-                    Text="Volume: " />
+                    <TextBlock
+                        Margin="40,0,5,0"
+                        VerticalAlignment="Center"
+                        Text="Volume: " />
 
-                <Slider
-                    Width="250"
-                    Margin="10,0"
-                    VerticalAlignment="Center"
-                    Maximum="1.0"
-                    Minimum="0"
-                    Value="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.Volume}" />
+                    <Slider
+                        Width="250"
+                        Margin="10,0"
+                        VerticalAlignment="Center"
+                        Maximum="1.0"
+                        Minimum="0"
+                        Value="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.Volume}" />
+                </StackPanel>
+
             </StackPanel>
         </Border>
 

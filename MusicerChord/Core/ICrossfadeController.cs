@@ -14,8 +14,16 @@ namespace MusicerChord.Core
         double EndOffsetSeconds { get; set; }
 
         public double Volume { get; set; }
-
+        
         bool IsPlaying { get; }
+
+        SoundPlaybackItem CurrentItem { get; }
+
+        string CurrentPlaybackTimeText { get; }
+
+        string TotalTimeText { get; }
+
+        string CurrentSoundName { get; }
 
         /// <summary>
         /// 新しい曲を再生します。すでに再生中の曲がある場合はクロスフェードを試みます。

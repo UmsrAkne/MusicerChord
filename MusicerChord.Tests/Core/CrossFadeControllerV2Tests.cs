@@ -124,5 +124,59 @@ namespace MusicerChord.Tests.Core
             // Assert
             Assert.That(result, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void Update_ShouldUpdatePlaybackPropertiesFromLatestPlayer()
+        {
+            // Arrange
+            var item1 = CreateItem("Song1.mp3", 60000);
+            var item2 = CreateItem("Song2.mp3", 90000);
+            
+            _player1.Setup(p => p.CurrentItem).Returns(item1);
+            _player1.Setup(p => p.GetPlaybackTimeMs()).Returns(1000);
+            _player1.Setup(p => p.GetTotalTimeMs()).Returns(60000);
+            
+            _player2.Setup(p => p.CurrentItem).Returns(item2);
+            _player2.Setup(p => p.GetPlaybackTimeMs()).Returns(500);
+            _player2.Setup(p => p.GetTotalTimeMs()).Returns(90000);
+
+            // Act 1: Player1 のみ
+            _controller.Play(item1);
+            _controller.Update(0.1);
+
+            // Assert 1
+            Assert.That(_controller.CurrentItem, Is.EqualTo(item1));
+            Assert.That(_controller.CurrentPlaybackTimeText, Is.EqualTo("00:00:01"));
+            Assert.That(_controller.TotalTimeText, Is.EqualTo("00:01:00"));
+            Assert.That(_controller.CurrentSoundName, Is.EqualTo("Song1"));
+            _player1.Verify(p => p.UpdateItemState(), Times.Once);
+
+            // Act 2: Player2 を追加 (クロスフェード開始想定)
+            _controller.Play(item2);
+            _controller.Update(0.1);
+
+            // Assert 2: 最新の Player2 の情報が反映されていること
+            Assert.That(_controller.CurrentItem, Is.EqualTo(item2));
+            Assert.That(_controller.CurrentPlaybackTimeText, Is.EqualTo("00:00:00"));
+            Assert.That(_controller.TotalTimeText, Is.EqualTo("00:01:30"));
+            Assert.That(_controller.CurrentSoundName, Is.EqualTo("Song2"));
+            
+            // 全てのプレイヤーの状態が更新されていること
+            _player1.Verify(p => p.UpdateItemState(), Times.Exactly(2));
+            _player2.Verify(p => p.UpdateItemState(), Times.Once);
+        }
+
+        [Test]
+        public void Update_WhenNoPlayers_ShouldClearPlaybackProperties()
+        {
+            // Act
+            _controller.Update(0.1);
+
+            // Assert
+            Assert.IsNull(_controller.CurrentItem);
+            Assert.That(_controller.CurrentPlaybackTimeText, Is.EqualTo("00:00:00"));
+            Assert.That(_controller.TotalTimeText, Is.EqualTo("00:00:00"));
+            Assert.That(_controller.CurrentSoundName, Is.Empty);
+        }
     }
 }

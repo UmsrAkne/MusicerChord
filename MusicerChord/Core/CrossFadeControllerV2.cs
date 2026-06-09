@@ -11,6 +11,10 @@ namespace MusicerChord.Core
         private readonly ISoundPlayerFactory soundPlayerFactory;
         private readonly Queue<ISoundPlayer> activePlayers = new ();
         private double volume = 1.0;
+        private string currentPlaybackTimeMs;
+        private string totalTimeText;
+        private string currentSoundName;
+        private SoundPlaybackItem currentItem;
 
         public CrossFadeControllerV2(ISoundPlayerFactory factory)
         {
@@ -29,6 +33,14 @@ namespace MusicerChord.Core
 
         public bool IsPlaying => NowPlaying();
 
+        public SoundPlaybackItem CurrentItem { get => currentItem; private set => SetProperty(ref currentItem, value); }
+
+        public string CurrentPlaybackTimeText { get => currentPlaybackTimeMs; private set => SetProperty(ref currentPlaybackTimeMs, value); }
+
+        public string TotalTimeText { get => totalTimeText; private set => SetProperty(ref totalTimeText, value); }
+
+        public string CurrentSoundName { get => currentSoundName; private set => SetProperty(ref currentSoundName, value); }
+
         public void Play(SoundPlaybackItem newItem, double initialVolume = 1)
         {
             var toActivePlayer = soundPlayerFactory.Create();
@@ -46,19 +58,31 @@ namespace MusicerChord.Core
         public void Update(double deltaTimeSeconds)
         {
             // キューにプレイヤーがいない（何も再生していない）場合は何もしない
-            if (!activePlayers.TryPeek(out var activePlayer) || !activePlayer.IsPlaying)
+            if (!activePlayers.TryPeek(out var activePlayer))
             {
+                ClearPlaybackInfo();
                 return;
             }
 
+            // activePlayers の最後のプレイヤー（最新のプレイヤー）を取得
+            var latestPlayer = activePlayers.Last();
+
             // 1. UI等への状態同期
-            activePlayer.UpdateItemState();
+            // すべてのプレイヤーの状態を同期（クロスフェード中などのため）
+            foreach (var p in activePlayers)
+            {
+                p.UpdateItemState();
+            }
+
+            // 最新のプレイヤーの情報をプロパティに反映
+            UpdatePlaybackInfo(latestPlayer);
 
             // 音量のコントロール
             ApplyVolumeControl();
 
             // 2. 再生時間の監視 と 次の曲の要求ロジック
-            if (CanExecuteCrossfade(activePlayer.CurrentItem))
+            // activePlayer (キューの先頭) が終了間近かどうかをチェック
+            if (activePlayer.IsPlaying && CanExecuteCrossfade(activePlayer.CurrentItem))
             {
                 double totalMs = activePlayer.GetTotalTimeMs();
                 double currentMs = activePlayer.GetPlaybackTimeMs();
@@ -73,6 +97,11 @@ namespace MusicerChord.Core
                     NextTrackRequested?.Invoke();
                 }
             }
+        }
+
+        public void StopAll()
+        {
+            Console.WriteLine("StopAll(v2)");
         }
 
         public bool CanExecuteCrossfade(SoundPlaybackItem item)
@@ -95,9 +124,20 @@ namespace MusicerChord.Core
             return totalDurationSeconds >= requiredMinimumSeconds;
         }
 
-        public void StopAll()
+        private void UpdatePlaybackInfo(ISoundPlayer player)
         {
-            Console.WriteLine("StopAll(v2)");
+            CurrentItem = player.CurrentItem;
+            CurrentPlaybackTimeText = TimeSpan.FromMilliseconds(player.GetPlaybackTimeMs()).ToString(@"hh\:mm\:ss");
+            TotalTimeText = TimeSpan.FromMilliseconds(player.GetTotalTimeMs()).ToString(@"hh\:mm\:ss");
+            CurrentSoundName = player.CurrentItem?.SoundFile?.FileNameWithoutExtension ?? string.Empty;
+        }
+
+        private void ClearPlaybackInfo()
+        {
+            CurrentItem = null;
+            CurrentPlaybackTimeText = TimeSpan.Zero.ToString(@"hh\:mm\:ss");
+            TotalTimeText = TimeSpan.Zero.ToString(@"hh\:mm\:ss");
+            CurrentSoundName = string.Empty;
         }
 
         private void OnPlaybackStopped(object sender, EventArgs e)
