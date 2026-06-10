@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:MusicerChord.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MusicerChord.Models"
     xmlns:prism="http://prismlibrary.com/"
@@ -65,37 +66,51 @@
             ItemsSource="{Binding SoundListViewModel.SoundFiles}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:SoundFile}">
-                    <Border>
-                        <Grid>
-                            <Grid.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
-                                </Style>
-                            </Grid.Resources>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock
-                                Grid.Column="0"
-                                Width="40"
-                                Text="{Binding PlayCount}" />
-
-                            <TextBlock Grid.Column="1" Text="{Binding FileNameWithoutExtension}" />
-
-                            <TextBlock
-                                Grid.Column="2"
-                                Width="100"
-                                HorizontalAlignment="Center"
-                                Text="{Binding DurationText}" />
-
-                        </Grid>
-
-                    </Border>
+                    <controls:SoundListRow DataContext="{Binding}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+                <Style BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="1" />
+
+                    <Setter Property="Template">
+                        <Setter.Value>
+
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <materialDesign:Card
+                                    x:Name="TemplateRoot"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    ClipToBounds="True"
+                                    UniformCornerRadius="6">
+
+                                    <materialDesign:Ripple
+                                        Padding="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Feedback="LightSkyBlue">
+
+                                        <ContentPresenter />
+                                    </materialDesign:Ripple>
+                                </materialDesign:Card>
+
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="TemplateRoot" Property="Background" Value="{StaticResource SelectionBrush}" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="TemplateRoot" Property="Background" Value="{StaticResource HoverBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+
+                </Style>
+            </ListBox.ItemContainerStyle>
         </ListBox>
 
         <Border
