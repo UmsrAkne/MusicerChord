@@ -121,7 +121,14 @@
                         VerticalAlignment="Center"
                         Maximum="1.0"
                         Minimum="0"
+                        TickFrequency="0.01"
+                        Ticks="0.01"
                         Value="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.Volume}" />
+
+                    <TextBlock
+                        Margin="10,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.Volume, StringFormat={}{0:0.00}}" />
                 </StackPanel>
 
             </StackPanel>
