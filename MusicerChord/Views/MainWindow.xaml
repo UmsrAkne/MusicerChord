@@ -67,6 +67,11 @@
                 <DataTemplate DataType="{x:Type models:SoundFile}">
                     <Border>
                         <Grid>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+                                </Style>
+                            </Grid.Resources>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
@@ -75,7 +80,7 @@
 
                             <TextBlock
                                 Grid.Column="0"
-                                Width="30"
+                                Width="40"
                                 Text="{Binding PlayCount}" />
 
                             <TextBlock Grid.Column="1" Text="{Binding FileNameWithoutExtension}" />
