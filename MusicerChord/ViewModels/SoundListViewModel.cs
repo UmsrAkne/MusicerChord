@@ -94,7 +94,13 @@ namespace MusicerChord.ViewModels
         private void SetUpSoundFilesAndPlaylist(List<SoundFile> list)
         {
             SoundFiles = new ObservableCollection<SoundFile>(list);
-            SoundPlayerService.SoundPlaylist = new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f)));
+            var index = 1;
+            foreach (var soundPlaybackItem in list)
+            {
+                soundPlaybackItem.LineNumber = index++;
+            }
+
+            SoundPlayerService.SoundPlaylist = new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f)).ToList());
         }
     }
 }

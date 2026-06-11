@@ -38,7 +38,7 @@
                 Padding="4,0"
                 Background="{StaticResource DarkBackgroundBrush}"
                 CornerRadius="4">
-                <TextBlock VerticalAlignment="Center" Text="{Binding PlayCount}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding LineNumber}" />
             </Border>
 
             <TextBlock
