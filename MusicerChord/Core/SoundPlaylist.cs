@@ -22,13 +22,7 @@ namespace MusicerChord.Core
         /// <returns>次のインデックスにあたるアイテム。</returns>
         public SoundPlaybackItem PeekNext()
         {
-            if (!items.Any())
-            {
-                return null;
-            }
-
-            var nextIndex = currentIndex >= items.Count - 1 ? 0 : currentIndex + 1;
-            return items[nextIndex];
+            return GetNextItem();
         }
 
         /// <summary>
@@ -37,13 +31,13 @@ namespace MusicerChord.Core
         /// <returns>次のインデックスにあたるアイテム。</returns>
         public SoundPlaybackItem MoveNext()
         {
-            if (!items.Any())
+            var item = GetNextItem();
+            if (item != null)
             {
-                return null;
+                currentIndex = items.IndexOf(item);
             }
 
-            currentIndex = currentIndex >= items.Count - 1 ? 0 : currentIndex + 1;
-            return items[currentIndex];
+            return item;
         }
 
         /// <summary>
@@ -59,6 +53,12 @@ namespace MusicerChord.Core
 
             currentIndex = 0;
             return items[currentIndex];
+        }
+
+        private SoundPlaybackItem GetNextItem()
+        {
+            var nextItem = items.Skip(currentIndex + 1).FirstOrDefault(s => !s.SoundFile.IsSkip);
+            return nextItem ?? items.FirstOrDefault(s => !s.SoundFile.IsSkip);
         }
     }
 }
