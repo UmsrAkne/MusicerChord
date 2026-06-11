@@ -24,6 +24,18 @@ namespace MusicerChord.Databases
             return await soundFileRepository.GetAllAsync();
         }
 
+        public async Task UpdateSkipStateAsync(int soundFileId, bool isSkip)
+        {
+            var soundFile = await soundFileRepository.GetByIdAsync(soundFileId);
+            if (soundFile == null)
+            {
+                throw new InvalidOperationException($"SoundFile not found. Id={soundFileId}");
+            }
+
+            soundFile.IsSkip = isSkip;
+            await soundFileRepository.UpdateAsync(soundFile);
+        }
+
         public async Task RecordListenHistoryAsync(int soundFileId)
         {
             var history = new ListenHistory
