@@ -20,6 +20,9 @@
 
             <SolidColorBrush x:Key="DeepBackgroundBrush" Color="#252530" />
             <SolidColorBrush x:Key="DarkBackgroundBrush" Color="#333340" />
+
+            <SolidColorBrush x:Key="DarkBackgroundAlphaBrush" Color="#99333340" />
+
             <SolidColorBrush x:Key="MiddleBackgroundBrush" Color="#444455" />
 
             <SolidColorBrush x:Key="SelectionBrush" Color="#446699" />
