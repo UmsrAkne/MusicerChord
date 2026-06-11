@@ -60,6 +60,19 @@
                             Text="Rev" />
                     </Button.Content>
                 </Button>
+
+                <Button
+                    Width="70"
+                    Margin="5"
+                    Command="{Binding SoundListViewModel.ShuffleSoundListCommand}"
+                    ToolTip="Shuffle">
+                    <Button.Content>
+                        <materialDesign:PackIcon
+                            Width="25"
+                            Height="25"
+                            Kind="Shuffle" />
+                    </Button.Content>
+                </Button>
             </StackPanel>
         </StackPanel>
 

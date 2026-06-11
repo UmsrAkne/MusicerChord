@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -53,6 +54,12 @@ namespace MusicerChord.ViewModels
         public DelegateCommand ReverseSoundListCommand => new DelegateCommand(() =>
         {
             var list = SoundFiles.Reverse().ToList();
+            SetUpSoundFilesAndPlaylist(list);
+        });
+
+        public DelegateCommand ShuffleSoundListCommand => new DelegateCommand(() =>
+        {
+            var list = SoundFiles.OrderBy(_ => Guid.NewGuid()).ToList();
             SetUpSoundFilesAndPlaylist(list);
         });
 
