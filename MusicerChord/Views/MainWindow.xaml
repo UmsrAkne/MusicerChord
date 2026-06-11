@@ -167,6 +167,13 @@
                         Command="{Binding SoundListViewModel.PlayCommand}"
                         Content="Play" />
 
+                    <Button
+                        Width="100"
+                        Margin="10,0"
+                        HorizontalAlignment="Left"
+                        Command="{Binding SoundListViewModel.StopCommand}"
+                        Content="Stop" />
+
                     <TextBlock
                         Margin="40,0,5,0"
                         VerticalAlignment="Center"

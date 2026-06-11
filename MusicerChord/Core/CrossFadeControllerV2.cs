@@ -128,7 +128,13 @@ namespace MusicerChord.Core
 
         public void StopAll()
         {
-            Console.WriteLine("StopAll(v2)");
+            while (activePlayers.TryDequeue(out var player))
+            {
+                player.PlaybackStopped -= OnPlaybackStopped;
+                player.StopAndRelease();
+            }
+
+            ClearPlaybackInfo();
         }
 
         public bool CanExecuteCrossfade(SoundPlaybackItem item)
