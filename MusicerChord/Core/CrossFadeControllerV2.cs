@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Threading;
 using MusicerChord.Models;
+using MusicerChord.Utils;
 using Prism.Mvvm;
 
 namespace MusicerChord.Core
@@ -10,6 +12,7 @@ namespace MusicerChord.Core
     {
         private readonly ISoundPlayerFactory soundPlayerFactory;
         private readonly Queue<ISoundPlayer> activePlayers = new ();
+        private readonly DispatcherTimer saveTimer;
         private double volume = 1.0;
         private string currentPlaybackTimeMs;
         private string totalTimeText;
@@ -19,6 +22,17 @@ namespace MusicerChord.Core
         public CrossFadeControllerV2(ISoundPlayerFactory factory)
         {
             soundPlayerFactory = factory;
+
+            saveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5), };
+
+            saveTimer.Tick += (_, _) =>
+            {
+                saveTimer.Stop();
+
+                var appSettings = AppSettings.Load(AppSettings.SettingFilePath);
+                appSettings.Volume = (float)Volume;
+                appSettings.Save(AppSettings.SettingFilePath);
+            };
         }
 
         public event Action NextTrackRequested;
@@ -29,7 +43,20 @@ namespace MusicerChord.Core
 
         public double EndOffsetSeconds { get; set; } = 5.0;
 
-        public double Volume { get => volume; set => SetProperty(ref volume, value); }
+        public double Volume
+        {
+            get => volume;
+            set
+            {
+                if (!SetProperty(ref volume, value))
+                {
+                    return;
+                }
+
+                saveTimer.Stop();
+                saveTimer.Start();
+            }
+        }
 
         public bool IsPlaying => NowPlaying();
 
@@ -101,7 +128,13 @@ namespace MusicerChord.Core
 
         public void StopAll()
         {
-            Console.WriteLine("StopAll(v2)");
+            while (activePlayers.TryDequeue(out var player))
+            {
+                player.PlaybackStopped -= OnPlaybackStopped;
+                player.StopAndRelease();
+            }
+
+            ClearPlaybackInfo();
         }
 
         public bool CanExecuteCrossfade(SoundPlaybackItem item)

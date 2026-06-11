@@ -12,6 +12,7 @@ namespace MusicerChord.Models
     {
         private int durationMs;
         private int playCount;
+        private int lineNumber;
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -51,5 +52,8 @@ namespace MusicerChord.Models
 
         [NotMapped]
         public string FullPath { get; set; }
+
+        [NotMapped]
+        public int LineNumber { get => lineNumber; set => SetProperty(ref lineNumber, value); }
     }
 }

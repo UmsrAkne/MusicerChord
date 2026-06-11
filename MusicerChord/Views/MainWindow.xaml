@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:MusicerChord.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MusicerChord.Models"
     xmlns:prism="http://prismlibrary.com/"
@@ -49,6 +50,41 @@
                 CornerRadius="5">
                 <TextBlock Text="{Binding RootPath}" />
             </Border>
+
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                        <Setter Property="Margin" Value="5" />
+                        <Setter Property="Width" Value="70" />
+                    </Style>
+
+                    <Style BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}" TargetType="materialDesign:PackIcon">
+                        <Setter Property="Width" Value="25" />
+                        <Setter Property="Height" Value="25" />
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button Command="{Binding SoundListViewModel.SortPlayCountAscendingCommand}" ToolTip="Sort by play count (ASC)">
+                    <Button.Content>
+                        <materialDesign:PackIcon Kind="SortNumericAscending" />
+                    </Button.Content>
+                </Button>
+
+                <Button Command="{Binding SoundListViewModel.ShuffleSoundListCommand}" ToolTip="Shuffle">
+                    <Button.Content>
+                        <materialDesign:PackIcon Kind="Shuffle" />
+                    </Button.Content>
+                </Button>
+
+                <Button Margin="5" Command="{Binding SoundListViewModel.ReverseSoundListCommand}">
+                    <Button.Content>
+                        <TextBlock
+                            FontWeight="ExtraBold"
+                            Foreground="Black"
+                            Text="Rev" />
+                    </Button.Content>
+                </Button>
+            </StackPanel>
         </StackPanel>
 
         <controls:CustomTreeView
@@ -65,32 +101,64 @@
             ItemsSource="{Binding SoundListViewModel.SoundFiles}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:SoundFile}">
-                    <Border>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock
-                                Grid.Column="0"
-                                Width="30"
-                                Text="{Binding PlayCount}" />
-
-                            <TextBlock Grid.Column="1" Text="{Binding FileNameWithoutExtension}" />
-
-                            <TextBlock
-                                Grid.Column="2"
-                                Width="100"
-                                HorizontalAlignment="Center"
-                                Text="{Binding DurationText}" />
-
-                        </Grid>
-
-                    </Border>
+                    <controls:SoundListRow DataContext="{Binding}" />
+                    <DataTemplate.Triggers>
+                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="Opacity"
+                                        From="0"
+                                        To="1"
+                                        Duration="0:0:0.5" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+                <Style BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="1" />
+
+                    <Setter Property="Template">
+                        <Setter.Value>
+
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <materialDesign:Card
+                                    x:Name="TemplateRoot"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    ClipToBounds="True"
+                                    UniformCornerRadius="6">
+
+                                    <materialDesign:Ripple
+                                        Padding="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Feedback="LightSkyBlue">
+
+                                        <ContentPresenter />
+                                    </materialDesign:Ripple>
+                                </materialDesign:Card>
+
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="TemplateRoot" Property="Background" Value="{StaticResource SelectionBrush}" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="TemplateRoot" Property="Background" Value="{StaticResource HoverBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+
+                </Style>
+            </ListBox.ItemContainerStyle>
         </ListBox>
 
         <Border
@@ -110,6 +178,13 @@
                         Command="{Binding SoundListViewModel.PlayCommand}"
                         Content="Play" />
 
+                    <Button
+                        Width="100"
+                        Margin="10,0"
+                        HorizontalAlignment="Left"
+                        Command="{Binding SoundListViewModel.StopCommand}"
+                        Content="Stop" />
+
                     <TextBlock
                         Margin="40,0,5,0"
                         VerticalAlignment="Center"
@@ -121,7 +196,14 @@
                         VerticalAlignment="Center"
                         Maximum="1.0"
                         Minimum="0"
+                        TickFrequency="0.01"
+                        Ticks="0.01"
                         Value="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.Volume}" />
+
+                    <TextBlock
+                        Margin="10,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.Volume, StringFormat={}{0:0.00}}" />
                 </StackPanel>
 
             </StackPanel>
