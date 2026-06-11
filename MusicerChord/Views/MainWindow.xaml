@@ -52,12 +52,16 @@
             </Border>
 
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Command="{Binding SoundListViewModel.ReverseSoundListCommand}">
+                <Button
+                    Width="70"
+                    Margin="5"
+                    Command="{Binding SoundListViewModel.SortPlayCountAscendingCommand}"
+                    ToolTip="Sort by play count (ASC)">
                     <Button.Content>
-                        <TextBlock
-                            FontWeight="ExtraBold"
-                            Foreground="Black"
-                            Text="Rev" />
+                        <materialDesign:PackIcon
+                            Width="25"
+                            Height="25"
+                            Kind="SortNumericAscending" />
                     </Button.Content>
                 </Button>
 
@@ -71,6 +75,15 @@
                             Width="25"
                             Height="25"
                             Kind="Shuffle" />
+                    </Button.Content>
+                </Button>
+
+                <Button Margin="5" Command="{Binding SoundListViewModel.ReverseSoundListCommand}">
+                    <Button.Content>
+                        <TextBlock
+                            FontWeight="ExtraBold"
+                            Foreground="Black"
+                            Text="Rev" />
                     </Button.Content>
                 </Button>
             </StackPanel>

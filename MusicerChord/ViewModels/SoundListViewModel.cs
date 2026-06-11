@@ -63,6 +63,12 @@ namespace MusicerChord.ViewModels
             SetUpSoundFilesAndPlaylist(list);
         });
 
+        public DelegateCommand SortPlayCountAscendingCommand => new DelegateCommand(() =>
+        {
+            var list = SoundFiles.OrderBy(s => s.PlayCount).ToList();
+            SetUpSoundFilesAndPlaylist(list);
+        });
+
         public async Task UpdateSoundListAsync(string objAbsolutePath)
         {
             // 1. まずはファイル名のリストだけ高速に作成（Durationはまだ0）
