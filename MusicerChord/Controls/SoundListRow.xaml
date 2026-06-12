@@ -30,13 +30,14 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Border
                 Grid.Column="0"
                 Width="50"
                 Padding="4,0"
-                Background="{StaticResource DarkBackgroundBrush}"
+                Background="{StaticResource DarkBackgroundAlphaBrush}"
                 CornerRadius="4">
                 <TextBlock VerticalAlignment="Center" Text="{Binding LineNumber}" />
             </Border>
@@ -49,18 +50,47 @@
 
             <Border
                 Grid.Column="2"
+                Width="50"
+                Margin="4,0"
+                Padding="8,0"
+                Background="{StaticResource DarkBackgroundAlphaBrush}"
+                CornerRadius="4">
+
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSkip}" Value="true">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding IsSkip}" Value="false">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="PaleVioletRed"
+                    Text="SKIP" />
+            </Border>
+
+            <Border
+                Grid.Column="3"
                 Width="60"
                 Margin="4,0"
                 Padding="8,0"
-                Background="{StaticResource DarkBackgroundBrush}"
+                Background="{StaticResource DarkBackgroundAlphaBrush}"
                 CornerRadius="4">
                 <TextBlock VerticalAlignment="Center" Text="{Binding PlayCount}" />
             </Border>
 
             <Border
-                Grid.Column="3"
+                Grid.Column="4"
                 Padding="8,0"
-                Background="{StaticResource DarkBackgroundBrush}"
+                Background="{StaticResource DarkBackgroundAlphaBrush}"
                 CornerRadius="4">
                 <TextBlock
                     HorizontalAlignment="Center"

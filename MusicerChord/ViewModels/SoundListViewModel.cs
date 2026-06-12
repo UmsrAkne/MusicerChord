@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using MusicerChord.Core;
 using MusicerChord.Databases;
 using MusicerChord.Models;
@@ -19,6 +20,8 @@ namespace MusicerChord.ViewModels
         private readonly SoundPathResolver soundPathResolver;
         private readonly SoundFileService soundFileService;
         private ObservableCollection<SoundFile> soundFiles = new ();
+        private AsyncRelayCommand toggleSkipStateAsyncCommand;
+        private SoundFile selectedSoundFile;
 
         public SoundListViewModel(SoundPlayerService playerService, SoundFileService soundFileService, bool isDesignMode = false)
         {
@@ -40,6 +43,12 @@ namespace MusicerChord.ViewModels
         }
 
         public SoundPlayerService SoundPlayerService { get; set; }
+
+        public SoundFile SelectedSoundFile
+        {
+            get => selectedSoundFile;
+            set => SetProperty(ref selectedSoundFile, value);
+        }
 
         public DelegateCommand PlayCommand => new DelegateCommand(() =>
         {
@@ -67,6 +76,19 @@ namespace MusicerChord.ViewModels
         {
             var list = SoundFiles.OrderBy(s => s.PlayCount).ToList();
             SetUpSoundFilesAndPlaylist(list);
+        });
+
+        public AsyncRelayCommand ToggleSkipStateAsyncCommand =>
+        toggleSkipStateAsyncCommand ??= new AsyncRelayCommand(async () =>
+        {
+            if (SelectedSoundFile == null)
+            {
+                Console.WriteLine("SelectedSoundFile is null (ToggleSkipStateAsyncCommand)");
+                return;
+            }
+
+            SelectedSoundFile.IsSkip = !SelectedSoundFile.IsSkip;
+            await soundFileService.UpdateSkipStateAsync(SelectedSoundFile.Id, SelectedSoundFile.IsSkip);
         });
 
         public async Task UpdateSoundListAsync(string objAbsolutePath)

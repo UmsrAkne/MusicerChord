@@ -98,7 +98,14 @@
             Grid.Row="1"
             Grid.Column="1"
             HorizontalContentAlignment="Stretch"
-            ItemsSource="{Binding SoundListViewModel.SoundFiles}">
+            ItemsSource="{Binding SoundListViewModel.SoundFiles}"
+            SelectedItem="{Binding SoundListViewModel.SelectedSoundFile}">
+            <ListBox.InputBindings>
+                <KeyBinding
+                    Key="S"
+                    Command="{Binding SoundListViewModel.ToggleSkipStateAsyncCommand}"
+                    Modifiers="Control" />
+            </ListBox.InputBindings>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:SoundFile}">
                     <controls:SoundListRow DataContext="{Binding}" />

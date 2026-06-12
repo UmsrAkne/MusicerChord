@@ -13,6 +13,7 @@ namespace MusicerChord.Models
         private int durationMs;
         private int playCount;
         private int lineNumber;
+        private bool isSkip;
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -45,7 +46,7 @@ namespace MusicerChord.Models
         public string DurationText => TimeSpan.FromMilliseconds(DurationMs).ToString(@"hh\:mm\:ss");
 
         [Required]
-        public bool IsSkip { get; set; }
+        public bool IsSkip { get => isSkip; set => SetProperty(ref isSkip, value); }
 
         [NotMapped]
         public int PlayCount { get => playCount; set => SetProperty(ref playCount, value); }
