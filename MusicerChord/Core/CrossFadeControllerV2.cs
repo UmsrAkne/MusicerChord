@@ -96,9 +96,14 @@ namespace MusicerChord.Core
 
             // 1. UI等への状態同期
             // すべてのプレイヤーの状態を同期（クロスフェード中などのため）
-            foreach (var p in activePlayers)
+            foreach (var p in activePlayers.ToList())
             {
                 p.UpdateItemState();
+
+                if (ShouldStopNow(p))
+                {
+                    p.Stop();
+                }
             }
 
             // 最新のプレイヤーの情報をプロパティに反映
@@ -213,6 +218,11 @@ namespace MusicerChord.Core
                 var oldPlayer = playerArray[0];
                 var newPlayer = playerArray[1];
 
+                if (!oldPlayer.IsPlaying || !newPlayer.IsPlaying)
+                {
+                    return;
+                }
+
                 // 古い曲の残り時間をベースに、フェードの進捗率（0.0 〜 1.0）を計算
                 double totalMs = oldPlayer.GetTotalTimeMs();
                 double currentMs = oldPlayer.GetPlaybackTimeMs();
@@ -230,6 +240,21 @@ namespace MusicerChord.Core
                 oldPlayer.Volume = targetVolume * (1.0f - progress); // Volume -> 0.0 へ減少
                 newPlayer.Volume = targetVolume * progress; // 0.0 -> Volume へ
             }
+        }
+
+        private bool ShouldStopNow(ISoundPlayer player)
+        {
+            if (!player.IsPlaying || !player.HasNextTrackRequested)
+            {
+                return false;
+            }
+
+            if (player.Volume > 0)
+            {
+                return false;
+            }
+
+            return player.GetPlaybackTimeMs() >= player.GetTotalTimeMs() - (EndOffsetSeconds * 1000);
         }
     }
 }

@@ -159,6 +159,11 @@ namespace MusicerChord.Core
         /// </summary>
         public void StopAndRelease()
         {
+            if (CurrentItem != null && CurrentItem.PlaybackState == PlaybackState.Playing)
+            {
+                OnPlaybackStopped(this, null);
+            }
+
             if (outputDevice != null)
             {
                 outputDevice.PlaybackStopped -= OnPlaybackStopped;
@@ -184,11 +189,21 @@ namespace MusicerChord.Core
 
         public int GetPlaybackTimeMs()
         {
+            if (audioFile == null)
+            {
+                return 0;
+            }
+
             return (int)audioFile.CurrentTime.TotalMilliseconds;
         }
 
         public int GetTotalTimeMs()
         {
+            if (audioFile == null)
+            {
+                return 0;
+            }
+
             return (int)audioFile.TotalTime.TotalMilliseconds;
         }
 
