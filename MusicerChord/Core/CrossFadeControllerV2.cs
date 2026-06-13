@@ -182,6 +182,7 @@ namespace MusicerChord.Core
         {
             var p = activePlayers.Dequeue();
             p.PlaybackStopped -= OnPlaybackStopped;
+            p.CurrentItem.SoundFile.Playing = false;
 
             // 他に再生中のプレイヤーがある場合はクロスフェードの最中なので、次を要求する必要はない。
             if (!NowPlaying())
