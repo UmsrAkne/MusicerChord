@@ -16,6 +16,8 @@ namespace MusicerChord.Core
 
         public bool HasItems => items.Any();
 
+        public SoundPlaybackItem CurrentItem => items[currentIndex];
+
         /// <summary>
         /// インデックスを変更せず、次のアイテムを取得します。
         /// </summary>

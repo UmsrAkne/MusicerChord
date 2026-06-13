@@ -30,5 +30,10 @@ namespace MusicerChord.Models
         }
 
         public SoundFile SoundFile { get; set; }
+
+        public override string ToString()
+        {
+            return $"[SoundPlaybackItem] FileName: {SoundFile.FileName}";
+        }
     }
 }
