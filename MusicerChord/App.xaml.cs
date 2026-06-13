@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using MusicerChord.Core;
 using MusicerChord.Databases;
 using MusicerChord.ViewModels;
 using MusicerChord.Views;
@@ -27,6 +28,9 @@ namespace MusicerChord
             containerRegistry.Register<ISoundFileRepository, SoundFileRepository>();
             containerRegistry.Register<IListenHistoryRepository, ListenHistoryRepository>();
             containerRegistry.Register<SoundFileService>();
+            containerRegistry.Register<ICrossfadeController, CrossFadeControllerV2>();
+            containerRegistry.Register<ISoundPlayerFactory, SoundPlayerFactory>();
+            containerRegistry.Register<IDateTimeProvider, DateTimeProvider>();
         }
 
         protected override void OnInitialized()
