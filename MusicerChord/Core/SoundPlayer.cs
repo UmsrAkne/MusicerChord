@@ -54,6 +54,7 @@ namespace MusicerChord.Core
 
             StopAndRelease();
             CurrentItem = item;
+            CurrentItem.SoundFile.Playing = true;
 
             try
             {

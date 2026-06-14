@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MusicerChord.Controls"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MusicerChord.Models"
     d:DataContext="{d:DesignInstance models:SoundFile}"
@@ -33,14 +34,36 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border
-                Grid.Column="0"
-                Width="50"
-                Padding="4,0"
-                Background="{StaticResource DarkBackgroundAlphaBrush}"
-                CornerRadius="4">
-                <TextBlock VerticalAlignment="Center" Text="{Binding LineNumber}" />
-            </Border>
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Border
+                    Width="50"
+                    Padding="4,0"
+                    Background="{StaticResource DarkBackgroundAlphaBrush}"
+                    CornerRadius="4">
+                    <TextBlock VerticalAlignment="Center" Text="{Binding LineNumber}" />
+                </Border>
+                <materialDesign:PackIcon
+                    Width="20"
+                    Height="20"
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    Foreground="{StaticResource AccentLightBrush}"
+                    Kind="PlayCircle">
+                    <materialDesign:PackIcon.Style>
+                        <Style TargetType="materialDesign:PackIcon">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Playing}" Value="True">
+                                    <Setter Property="Opacity" Value="0.9" />
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Playing}" Value="False">
+                                    <Setter Property="Opacity" Value="0.1" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </materialDesign:PackIcon.Style>
+                </materialDesign:PackIcon>
+            </StackPanel>
 
             <TextBlock
                 Grid.Column="1"

@@ -17,9 +17,10 @@
     d:DesignHeight="300"
     d:DesignWidth="800"
     prism:ViewModelLocator.AutoWireViewModel="True"
+    Background="{StaticResource DeepBackgroundBrush}"
     mc:Ignorable="d">
 
-    <Grid Background="{StaticResource DeepBackgroundBrush}">
+    <Grid Margin="5" Background="{StaticResource DeepBackgroundBrush}">
 
         <Grid.Resources>
             <Style TargetType="TextBlock">
@@ -76,7 +77,7 @@
                     </Button.Content>
                 </Button>
 
-                <Button Margin="5" Command="{Binding SoundListViewModel.ReverseSoundListCommand}">
+                <Button Margin="5,5,0,5" Command="{Binding SoundListViewModel.ReverseSoundListCommand}">
                     <Button.Content>
                         <TextBlock
                             FontWeight="ExtraBold"
@@ -173,7 +174,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="2">
             <StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Margin="0,5" Orientation="Horizontal">
                     <TextBlock Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.CurrentSoundName}" />
                     <TextBlock Margin="10,0" Text="/" />
                     <TextBlock Text="{Binding SoundListViewModel.SoundPlayerService.CrossfadeController.CurrentPlaybackTimeText}" />
@@ -182,15 +183,27 @@
                     <Button
                         Width="100"
                         HorizontalAlignment="Left"
-                        Command="{Binding SoundListViewModel.PlayCommand}"
-                        Content="Play" />
+                        Command="{Binding SoundListViewModel.PlayCommand}">
+                        <Button.Content>
+                            <TextBlock
+                                FontWeight="ExtraBold"
+                                Foreground="Black"
+                                Text="Play" />
+                        </Button.Content>
+                    </Button>
 
                     <Button
                         Width="100"
                         Margin="10,0"
                         HorizontalAlignment="Left"
-                        Command="{Binding SoundListViewModel.StopCommand}"
-                        Content="Stop" />
+                        Command="{Binding SoundListViewModel.StopCommand}">
+                        <Button.Content>
+                            <TextBlock
+                                FontWeight="ExtraBold"
+                                Foreground="Black"
+                                Text="Stop" />
+                        </Button.Content>
+                    </Button>
 
                     <TextBlock
                         Margin="40,0,5,0"

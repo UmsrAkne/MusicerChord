@@ -14,6 +14,7 @@ namespace MusicerChord.Models
         private int playCount;
         private int lineNumber;
         private bool isSkip;
+        private bool playing;
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -56,5 +57,9 @@ namespace MusicerChord.Models
 
         [NotMapped]
         public int LineNumber { get => lineNumber; set => SetProperty(ref lineNumber, value); }
+
+        // アイコン表示用
+        [NotMapped]
+        public bool Playing { get => playing; set => SetProperty(ref playing, value); }
     }
 }
