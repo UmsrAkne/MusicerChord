@@ -25,6 +25,8 @@ namespace MusicerChord.Models
             AbsolutePath = absoluteRootPath;
         }
 
+        public Action<ISoundContainer, IEnumerable<ISoundContainer>> RequestInsertChildren { get; set; }
+
         public string Name => System.IO.Path.GetFileName(Path);
 
         public string Path { get; } // 例: "Ambient/Nature"
@@ -65,9 +67,7 @@ namespace MusicerChord.Models
                 }
 
                 var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(AbsolutePath));
-
-                Children.Clear();
-                Children.AddRange(items);
+                RequestInsertChildren?.Invoke(this, items);
 
                 lastLoadedTime = currentWriteTime;
             });
