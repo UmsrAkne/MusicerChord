@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MusicerChord.Core;
 using MusicerChord.Models;
@@ -11,11 +12,13 @@ using Prism.Mvvm;
 namespace MusicerChord.ViewModels
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class DirectoryTreeViewModel : BindableBase
+    public sealed class DirectoryTreeViewModel : BindableBase, IDisposable
     {
+        private readonly SemaphoreSlim semaphore = new (1, 1);
         private ObservableCollection<ISoundContainer> soundContainers = new ();
 
         private ISoundContainer selectedContainer;
+        private bool disposed;
 
         public event Action<ISoundContainer> SoundContainerOpened;
 
@@ -56,21 +59,51 @@ namespace MusicerChord.ViewModels
             AddSoundContainers(containers);
         }
 
-        private void OnRequestInsertChildren(ISoundContainer parent, IEnumerable<ISoundContainer> children)
+        public void Dispose()
         {
-            // 1. まず、大元のリストの中で「クリックされた親」が何番目にいるか探す
-            var parentIndex = SoundContainers.IndexOf(parent);
-            if (parentIndex == -1)
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposed)
             {
                 return;
             }
 
-            // 2. 親のすぐ後ろのインデックスから、1件ずつ順番に挿入（Insert）していく
-            var insertIndex = parentIndex + 1;
-            foreach (var child in children)
+            if (disposing)
             {
-                child.RequestInsertChildren = OnRequestInsertChildren;
-                SoundContainers.Insert(insertIndex++, child);
+                semaphore.Dispose();
+            }
+
+            disposed = true;
+        }
+
+        private async Task OnRequestInsertChildren(ISoundContainer parent, IEnumerable<ISoundContainer> children)
+        {
+            await semaphore.WaitAsync();
+
+            try
+            {
+                // 1. まず、大元のリストの中で「クリックされた親」が何番目にいるか探す
+                var parentIndex = SoundContainers.IndexOf(parent);
+                if (parentIndex == -1)
+                {
+                    return;
+                }
+
+                // 2. 親のすぐ後ろのインデックスから、1件ずつ順番に挿入（Insert）していく
+                var insertIndex = parentIndex + 1;
+                foreach (var child in children)
+                {
+                    child.RequestInsertChildren = OnRequestInsertChildren;
+                    SoundContainers.Insert(insertIndex++, child);
+                    await Task.Delay(40);
+                }
+            }
+            finally
+            {
+                semaphore.Release();
             }
         }
     }

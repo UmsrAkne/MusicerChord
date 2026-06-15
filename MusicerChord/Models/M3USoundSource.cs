@@ -20,7 +20,7 @@ public class M3USoundSource : BindableBase, ISoundContainer
         AbsolutePath = absoluteRootPath;
     }
 
-    public Action<ISoundContainer, IEnumerable<ISoundContainer>> RequestInsertChildren { get; set; }
+    public Func<ISoundContainer, IEnumerable<ISoundContainer>, Task> RequestInsertChildren { get; set; }
 
     public string Name => System.IO.Path.GetFileNameWithoutExtension(Path);
 

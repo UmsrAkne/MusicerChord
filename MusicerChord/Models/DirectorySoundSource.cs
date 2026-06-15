@@ -26,7 +26,7 @@ namespace MusicerChord.Models
             AbsolutePath = absoluteRootPath;
         }
 
-        public Action<ISoundContainer, IEnumerable<ISoundContainer>> RequestInsertChildren { get; set; }
+        public Func<ISoundContainer, IEnumerable<ISoundContainer>, Task> RequestInsertChildren { get; set; }
 
         public string Name => System.IO.Path.GetFileName(Path);
 

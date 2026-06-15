@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 
 namespace MusicerChord.Models
 {
     public interface ISoundContainer
     {
-        public Action<ISoundContainer, IEnumerable<ISoundContainer>> RequestInsertChildren { get; set; }
+        public Func<ISoundContainer, IEnumerable<ISoundContainer>, Task> RequestInsertChildren { get; set; }
 
         // アプリの画面（ツリービューやリストなど）に表示する名前
         // 例: "お気に入りフォルダ" や "作業用BGM.m3u"
