@@ -69,6 +69,7 @@ namespace MusicerChord.ViewModels
             var insertIndex = parentIndex + 1;
             foreach (var child in children)
             {
+                child.RequestInsertChildren = OnRequestInsertChildren;
                 SoundContainers.Insert(insertIndex++, child);
             }
         }

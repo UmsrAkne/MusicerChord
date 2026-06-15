@@ -32,6 +32,8 @@ public class M3USoundSource : BindableBase, ISoundContainer
 
     public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
 
+    public int Depth { get; set; }
+
     public AsyncRelayCommand LoadChildrenCommand { get; } = new (() => Task.CompletedTask);
 
     public IEnumerable<string> GetRelativeFilePaths()

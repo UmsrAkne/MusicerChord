@@ -23,6 +23,8 @@ namespace MusicerChord.Models
 
         static bool HasChildren { get; set; }
 
+        public int Depth { get; set; }
+
         AsyncRelayCommand LoadChildrenCommand { get; }
 
         // このソースが内包しているサウンドの相対パス一覧を返す
