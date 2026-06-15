@@ -13,7 +13,6 @@ namespace MusicerChord.Core
         private readonly DispatcherTimer timer;
         private readonly int updateIntervalMs = 100;
         private readonly SoundFileService soundFileService;
-        private readonly IDateTimeProvider dateTimeProvider;
 
         private DateTime lastUpdateTime;
 
@@ -27,7 +26,6 @@ namespace MusicerChord.Core
             CrossfadeController = crossfadeController;
             CrossfadeController.NextTrackRequested += PlayNext;
 
-            this.dateTimeProvider = dateTimeProvider;
             this.timer = timer;
 
             timer.Interval = TimeSpan.FromMilliseconds(updateIntervalMs);

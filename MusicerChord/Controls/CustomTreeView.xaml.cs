@@ -1,9 +1,8 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace MusicerChord.Controls
 {
-    public partial class CustomTreeView : UserControl
+    public partial class CustomTreeView
     {
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(

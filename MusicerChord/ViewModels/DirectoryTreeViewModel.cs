@@ -15,18 +15,13 @@ namespace MusicerChord.ViewModels
     public sealed class DirectoryTreeViewModel : BindableBase, IDisposable
     {
         private readonly SemaphoreSlim semaphore = new (1, 1);
-        private ObservableCollection<ISoundContainer> soundContainers = new ();
 
         private ISoundContainer selectedContainer;
         private bool disposed;
 
         public event Action<ISoundContainer> SoundContainerOpened;
 
-        public ObservableCollection<ISoundContainer> SoundContainers
-        {
-            get => soundContainers;
-            private set => SetProperty(ref soundContainers, value);
-        }
+        public ObservableCollection<ISoundContainer> SoundContainers { get; } = new ();
 
         public ISoundContainer SelectedContainer
         {
