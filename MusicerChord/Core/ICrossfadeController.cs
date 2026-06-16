@@ -29,6 +29,7 @@ namespace MusicerChord.Core
         /// 新しい曲を再生します。すでに再生中の曲がある場合はクロスフェードを試みます。
         /// </summary>
         /// <param name="newItem">再生したいアイテム</param>
+        /// <param name="initialVolume">初期音量。未設定なら最大音量がセットされる。</param>
         void Play(SoundPlaybackItem newItem, double initialVolume = 1.0);
 
         /// <summary>

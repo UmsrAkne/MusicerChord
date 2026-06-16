@@ -94,7 +94,8 @@ namespace MusicerChord.ViewModels
         public async Task UpdateSoundListAsync(string objAbsolutePath)
         {
             // 1. まずはファイル名のリストだけ高速に作成（Durationはまだ0）
-            var list = Directory.GetFiles(objAbsolutePath, "*.mp3", SearchOption.AllDirectories)
+            // この機能は対象フォルダの直下（ルート）にあるファイルのみを管理（リスティング）対象とするため、サブフォルダは検索しない。
+            var list = Directory.GetFiles(objAbsolutePath, "*.mp3", SearchOption.TopDirectoryOnly)
                 .Select(p => new SoundFile()
                 {
                     RelativePath = soundPathResolver.ResolveRelativePath(p),

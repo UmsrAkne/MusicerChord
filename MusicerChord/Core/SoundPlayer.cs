@@ -104,6 +104,7 @@ namespace MusicerChord.Core
         /// <summary>
         /// 現在の再生位置を強制的に変更（シーク）します。
         /// </summary>
+        /// <param name="time">シークする再生位置</param>
         public void SetPlaybackTime(TimeSpan time)
         {
             if (audioFile == null)

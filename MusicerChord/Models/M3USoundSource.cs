@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,8 @@ public class M3USoundSource : BindableBase, ISoundContainer
         AbsolutePath = absoluteRootPath;
     }
 
+    public Func<ISoundContainer, IEnumerable<ISoundContainer>, Task> RequestInsertChildren { get; set; }
+
     public string Name => System.IO.Path.GetFileNameWithoutExtension(Path);
 
     public string Path { get; } // 例: "Playlists/my_favorite.m3u"
@@ -29,7 +32,14 @@ public class M3USoundSource : BindableBase, ISoundContainer
 
     public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
 
+    public int Depth { get; set; }
+
     public AsyncRelayCommand LoadChildrenCommand { get; } = new (() => Task.CompletedTask);
+
+    public Task<IEnumerable<ISoundContainer>> LoadChildren()
+    {
+        throw new NotImplementedException();
+    }
 
     public IEnumerable<string> GetRelativeFilePaths()
     {

@@ -17,6 +17,7 @@ namespace MusicerChord.Models
         private bool hasChildren;
         private AsyncRelayCommand loadChildrenCommand;
         private DateTime lastLoadedTime;
+        private int depth;
 
         public DirectorySoundSource(string relativePath, string absoluteRootPath)
         {
@@ -24,6 +25,8 @@ namespace MusicerChord.Models
             this.absoluteRootPath = absoluteRootPath;
             AbsolutePath = absoluteRootPath;
         }
+
+        public Func<ISoundContainer, IEnumerable<ISoundContainer>, Task> RequestInsertChildren { get; set; }
 
         public string Name => System.IO.Path.GetFileName(Path);
 
@@ -48,6 +51,8 @@ namespace MusicerChord.Models
 
         public string AbsolutePath { get; set; }
 
+        public int Depth { get => depth; set => SetProperty(ref depth, value); }
+
         public AsyncRelayCommand LoadChildrenCommand =>
             loadChildrenCommand ??= new AsyncRelayCommand(async () =>
             {
@@ -65,12 +70,42 @@ namespace MusicerChord.Models
                 }
 
                 var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(AbsolutePath));
+                foreach (var soundContainer in items)
+                {
+                    soundContainer.Depth = Depth + 1;
+                }
 
-                Children.Clear();
-                Children.AddRange(items);
+                RequestInsertChildren?.Invoke(this, items);
 
                 lastLoadedTime = currentWriteTime;
             });
+
+        public async Task<IEnumerable<ISoundContainer>> LoadChildren()
+        {
+            if (!HasChildren)
+            {
+                return new List<ISoundContainer>();
+            }
+
+            var currentWriteTime = GetSourceLastWriteTime(AbsolutePath);
+
+            // 前回読み込んだ時と日時が同じなら、中身が変わっていないので中断。
+            if (lastLoadedTime == currentWriteTime)
+            {
+                return Children.ToList();
+            }
+
+            var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(AbsolutePath));
+            foreach (var soundContainer in items)
+            {
+                soundContainer.Depth = Depth + 1;
+            }
+
+            Children.Clear();
+            Children.AddRange(items);
+            lastLoadedTime = currentWriteTime;
+            return items;
+        }
 
         public IEnumerable<string> GetRelativeFilePaths()
         {

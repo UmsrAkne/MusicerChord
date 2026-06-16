@@ -15,7 +15,19 @@ namespace MusicerChord.Models
             SoundFile = soundFile;
         }
 
-        public bool IsPlaying { get => isPlaying; set => SetProperty(ref isPlaying, value); }
+        public bool IsPlaying
+        {
+            get => isPlaying;
+            set
+            {
+                if (SoundFile != null)
+                {
+                    SoundFile.Playing = value;
+                }
+
+                SetProperty(ref isPlaying, value);
+            }
+        }
 
         public PlaybackState PlaybackState
         {
