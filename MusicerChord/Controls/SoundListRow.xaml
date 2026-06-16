@@ -47,7 +47,7 @@
                     Margin="5,0"
                     VerticalAlignment="Center"
                     Foreground="{StaticResource AccentLightBrush}"
-                    Kind="PlayCircle">
+                    Kind="MusicCircle">
                     <materialDesign:PackIcon.Style>
                         <Style TargetType="materialDesign:PackIcon">
                             <Style.Triggers>
