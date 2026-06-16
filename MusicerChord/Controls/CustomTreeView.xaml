@@ -35,6 +35,13 @@
                             </StackPanel.Resources>
                             <Border Width="{Binding Depth, Converter={StaticResource MultiplierConverter}, ConverterParameter=20}" />
 
+                            <Border
+                                Width="3"
+                                Margin="0,0,6,0"
+                                Background="{StaticResource CommonForegroundBrush}"
+                                CornerRadius="1"
+                                Opacity="0.5" />
+
                             <TextBlock
                                 FontSize="{StaticResource CommonFontSize}"
                                 Foreground="{StaticResource CommonForegroundBrush}"
