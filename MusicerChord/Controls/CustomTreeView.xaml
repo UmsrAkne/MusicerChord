@@ -24,7 +24,7 @@
 
                         <b:Interaction.Triggers>
                             <b:EventTrigger EventName="MouseDoubleClick">
-                                <b:InvokeCommandAction Command="{Binding LoadChildrenCommand}" />
+                                <b:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.LoadSoundContainerChildrenAsyncCommand}" />
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
 

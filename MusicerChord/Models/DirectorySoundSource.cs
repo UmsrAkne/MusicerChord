@@ -80,6 +80,33 @@ namespace MusicerChord.Models
                 lastLoadedTime = currentWriteTime;
             });
 
+        public async Task<IEnumerable<ISoundContainer>> LoadChildren()
+        {
+            if (!HasChildren)
+            {
+                return new List<ISoundContainer>();
+            }
+
+            var currentWriteTime = GetSourceLastWriteTime(AbsolutePath);
+
+            // 前回読み込んだ時と日時が同じなら、中身が変わっていないので中断。
+            if (lastLoadedTime == currentWriteTime)
+            {
+                return Children.ToList();
+            }
+
+            var items = await Task.Run(() => SoundSourceFactory.CreateFromPath(AbsolutePath));
+            foreach (var soundContainer in items)
+            {
+                soundContainer.Depth = Depth + 1;
+            }
+
+            Children.Clear();
+            Children.AddRange(items);
+            lastLoadedTime = currentWriteTime;
+            return items;
+        }
+
         public IEnumerable<string> GetRelativeFilePaths()
         {
             // 実際のフルパスを組み立てて、そこからファイルをスキャンする

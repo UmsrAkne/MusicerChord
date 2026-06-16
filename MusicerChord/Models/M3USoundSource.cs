@@ -36,6 +36,11 @@ public class M3USoundSource : BindableBase, ISoundContainer
 
     public AsyncRelayCommand LoadChildrenCommand { get; } = new (() => Task.CompletedTask);
 
+    public Task<IEnumerable<ISoundContainer>> LoadChildren()
+    {
+        throw new NotImplementedException();
+    }
+
     public IEnumerable<string> GetRelativeFilePaths()
     {
         var fullPath = System.IO.Path.Combine(absoluteRootPath, Path);

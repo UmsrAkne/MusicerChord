@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using MusicerChord.Core;
 using MusicerChord.Models;
-using Prism.Commands;
 using Prism.Mvvm;
 
 namespace MusicerChord.ViewModels
@@ -18,6 +18,7 @@ namespace MusicerChord.ViewModels
 
         private ISoundContainer selectedContainer;
         private bool disposed;
+        private AsyncRelayCommand loadSoundContainerChildrenAsyncCommand;
 
         public event Action<ISoundContainer> SoundContainerOpened;
 
@@ -29,9 +30,16 @@ namespace MusicerChord.ViewModels
             set => SetProperty(ref selectedContainer, value);
         }
 
-        public DelegateCommand OpenSoundContainerCommand => new (() =>
+        public AsyncRelayCommand LoadSoundContainerChildrenAsyncCommand =>
+        loadSoundContainerChildrenAsyncCommand ??= new AsyncRelayCommand(async () =>
         {
-            Console.WriteLine("Open Sound Container");
+            if (SelectedContainer == null)
+            {
+                return;
+            }
+
+            var children = await SelectedContainer.LoadChildren();
+            await OnRequestInsertChildren(SelectedContainer, children);
             SoundContainerOpened?.Invoke(SelectedContainer);
         });
 

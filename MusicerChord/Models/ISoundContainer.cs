@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
 
 namespace MusicerChord.Models
 {
@@ -26,7 +25,7 @@ namespace MusicerChord.Models
 
         public int Depth { get; set; }
 
-        AsyncRelayCommand LoadChildrenCommand { get; }
+        public Task<IEnumerable<ISoundContainer>> LoadChildren();
 
         // このソースが内包しているサウンドの相対パス一覧を返す
         // 後々DB化や遅延読み込み（IAsyncEnumerableなど）にする際も、このシグネチャなら対応しやすいです
