@@ -50,14 +50,33 @@
                     Kind="MusicCircle">
                     <materialDesign:PackIcon.Style>
                         <Style TargetType="materialDesign:PackIcon">
+                            <Setter Property="Opacity" Value="0.1" />
+
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Playing}" Value="True">
-                                    <Setter Property="Opacity" Value="0.9" />
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    To="0.9"
+                                                    Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    To="0.1"
+                                                    Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
                                 </DataTrigger>
 
-                                <DataTrigger Binding="{Binding Playing}" Value="False">
-                                    <Setter Property="Opacity" Value="0.1" />
-                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </materialDesign:PackIcon.Style>
