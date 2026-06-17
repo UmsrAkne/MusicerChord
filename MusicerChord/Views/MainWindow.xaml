@@ -65,6 +65,12 @@
                     </Style>
                 </StackPanel.Resources>
 
+                <Button Command="{Binding SoundListViewModel.SortByFileNameAscendingCommand}" ToolTip="Sort by file name (ASC)">
+                    <Button.Content>
+                        <materialDesign:PackIcon Kind="SortAlphabeticalAscending" />
+                    </Button.Content>
+                </Button>
+
                 <Button Command="{Binding SoundListViewModel.SortPlayCountAscendingCommand}" ToolTip="Sort by play count (ASC)">
                     <Button.Content>
                         <materialDesign:PackIcon Kind="SortNumericAscending" />

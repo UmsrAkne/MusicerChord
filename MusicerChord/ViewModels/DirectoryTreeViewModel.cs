@@ -97,11 +97,18 @@ namespace MusicerChord.ViewModels
 
                 // 2. 親のすぐ後ろのインデックスから、1件ずつ順番に挿入（Insert）していく
                 var insertIndex = parentIndex + 1;
+                var count = 0;
                 foreach (var child in children)
                 {
                     child.RequestInsertChildren = OnRequestInsertChildren;
                     SoundContainers.Insert(insertIndex++, child);
-                    await Task.Delay(40);
+
+                    if (count < 20 && count % 2 == 0)
+                    {
+                        await Task.Delay(40);
+                    }
+
+                    count++;
                 }
             }
             finally

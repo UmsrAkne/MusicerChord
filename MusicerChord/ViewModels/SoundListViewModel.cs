@@ -78,6 +78,12 @@ namespace MusicerChord.ViewModels
             SetUpSoundFilesAndPlaylist(list);
         });
 
+        public DelegateCommand SortByFileNameAscendingCommand => new DelegateCommand(() =>
+        {
+            var list = SoundFiles.OrderBy(s => s.FileName).ToList();
+            SetUpSoundFilesAndPlaylist(list);
+        });
+
         public AsyncRelayCommand ToggleSkipStateAsyncCommand =>
         toggleSkipStateAsyncCommand ??= new AsyncRelayCommand(async () =>
         {
