@@ -5,6 +5,7 @@
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:converters="clr-namespace:MusicerChord.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MusicerChord.Models"
     xmlns:viewModels="clr-namespace:MusicerChord.ViewModels"
@@ -35,14 +36,45 @@
                             </StackPanel.Resources>
                             <Border Width="{Binding Depth, Converter={StaticResource MultiplierConverter}, ConverterParameter=20}" />
 
-                            <Border
-                                Width="3"
-                                Margin="0,0,6,0"
-                                Background="{StaticResource CommonForegroundBrush}"
-                                CornerRadius="1"
-                                Opacity="0.5" />
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Margin="6,6,2,6"
+                                Foreground="{StaticResource CommonForegroundBrush}"
+                                Kind="Plus">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasSubDirectory}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Margin="2,6,6,6">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                        <Setter Property="Kind" Value="PlaylistMusicOutline" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasSoundFile}" Value="False">
+                                                <Setter Property="Kind" Value="Folder" />
+                                                <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+
 
                             <TextBlock
+                                VerticalAlignment="Center"
                                 FontSize="{StaticResource CommonFontSize}"
                                 Foreground="{StaticResource CommonForegroundBrush}"
                                 Text="{Binding Name}" />

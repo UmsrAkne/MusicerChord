@@ -18,6 +18,8 @@ namespace MusicerChord.Models
         private AsyncRelayCommand loadChildrenCommand;
         private DateTime lastLoadedTime;
         private int depth;
+        private bool hasSubDirectory;
+        private bool hasSoundFile;
 
         public DirectorySoundSource(string relativePath, string absoluteRootPath)
         {
@@ -33,6 +35,10 @@ namespace MusicerChord.Models
         public string Path { get; } // 例: "Ambient/Nature"
 
         public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
+
+        public bool HasSubDirectory { get => hasSubDirectory; set => SetProperty(ref hasSubDirectory, value); }
+
+        public bool HasSoundFile { get => hasSoundFile; set => SetProperty(ref hasSoundFile, value); }
 
         public ObservableCollection<ISoundContainer> Children
         {
@@ -79,6 +85,37 @@ namespace MusicerChord.Models
 
                 lastLoadedTime = currentWriteTime;
             });
+
+        public void UpdateDirectoryStatus(string targetPath)
+        {
+            if (string.IsNullOrWhiteSpace(targetPath) || !Directory.Exists(targetPath))
+            {
+                HasSubDirectory = false;
+                HasSoundFile = false;
+                return;
+            }
+
+            try
+            {
+                // サブディレクトリが1つでも存在するかチェック
+                HasSubDirectory = Directory.EnumerateDirectories(targetPath).Any();
+
+                // .mp3 ファイルが1つでも存在するかチェック
+                var enumerationOptions = new EnumerationOptions
+                {
+                    MatchCasing = MatchCasing.CaseInsensitive,
+                    RecurseSubdirectories = false, // 今回の階層直下のみ
+                };
+
+                HasSoundFile = Directory.EnumerateFiles(targetPath, "*.mp3", enumerationOptions).Any();
+            }
+            catch (Exception e)
+            {
+                HasSubDirectory = false;
+                HasSoundFile = false;
+                Console.WriteLine(e.Message);
+            }
+        }
 
         public async Task<IEnumerable<ISoundContainer>> LoadChildren()
         {

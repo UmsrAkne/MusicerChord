@@ -30,7 +30,11 @@ public class M3USoundSource : BindableBase, ISoundContainer
 
     public string AbsolutePath { get; set; }
 
+    public bool HasSubDirectory { get; set; }
+
     public bool HasChildren { get => hasChildren; set => SetProperty(ref hasChildren, value); }
+
+    public bool HasSoundFile { get; set; }
 
     public int Depth { get; set; }
 
@@ -65,5 +69,10 @@ public class M3USoundSource : BindableBase, ISoundContainer
         }
 
         return paths;
+    }
+
+    public void UpdateDirectoryStatus(string targetPath)
+    {
+        throw new NotImplementedException();
     }
 }
