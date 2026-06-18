@@ -19,14 +19,20 @@ namespace MusicerChord.ViewModels
     {
         private readonly SoundPathResolver soundPathResolver;
         private readonly SoundFileService soundFileService;
+        private readonly IMetadataReader metadataReader;
         private ObservableCollection<SoundFile> soundFiles = new ();
         private AsyncRelayCommand toggleSkipStateAsyncCommand;
         private SoundFile selectedSoundFile;
 
-        public SoundListViewModel(SoundPlayerService playerService, SoundFileService soundFileService, bool isDesignMode = false)
+        public SoundListViewModel(
+            SoundPlayerService playerService,
+            SoundFileService soundFileService,
+            IMetadataReader metadataReader,
+            bool isDesignMode = false)
         {
             SoundPlayerService = playerService;
             this.soundFileService = soundFileService;
+            this.metadataReader = metadataReader;
 
             // IO処理が含まれていると、XAMLプレビューが無効になるため。
             if (!isDesignMode)
@@ -129,7 +135,8 @@ namespace MusicerChord.ViewModels
                 soundPlaybackItem.LineNumber = index++;
             }
 
-            SoundPlayerService.SoundPlaylist = new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f)).ToList());
+            SoundPlayerService.SoundPlaylist =
+                new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f, metadataReader)).ToList());
         }
     }
 }

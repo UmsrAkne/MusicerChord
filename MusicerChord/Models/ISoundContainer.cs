@@ -21,7 +21,11 @@ namespace MusicerChord.Models
 
         string AbsolutePath { get; set; }
 
-        static bool HasChildren { get; set; }
+        bool HasSubDirectory { get; set; }
+
+        bool HasSoundFile { get; set; }
+
+        bool IsEmpty { get; }
 
         public int Depth { get; set; }
 
@@ -30,5 +34,7 @@ namespace MusicerChord.Models
         // このソースが内包しているサウンドの相対パス一覧を返す
         // 後々DB化や遅延読み込み（IAsyncEnumerableなど）にする際も、このシグネチャなら対応しやすいです
         IEnumerable<string> GetRelativeFilePaths();
+
+        void UpdateDirectoryStatus(string targetPath);
     }
 }

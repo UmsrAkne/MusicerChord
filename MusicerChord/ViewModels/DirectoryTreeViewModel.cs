@@ -57,7 +57,16 @@ namespace MusicerChord.ViewModels
         public async Task LoadDirectories(string rootPath)
         {
             var containers =
-                await Task.Run(() => SoundSourceFactory.CreateFromPath(rootPath));
+                await Task.Run(() =>
+                {
+                    var l = SoundSourceFactory.CreateFromPath(rootPath);
+                    foreach (var soundContainer in l)
+                    {
+                        soundContainer.UpdateDirectoryStatus(soundContainer.AbsolutePath);
+                    }
+
+                    return l;
+                });
 
             AddSoundContainers(containers);
         }
@@ -101,6 +110,7 @@ namespace MusicerChord.ViewModels
                 foreach (var child in children)
                 {
                     child.RequestInsertChildren = OnRequestInsertChildren;
+                    child.UpdateDirectoryStatus(child.AbsolutePath);
                     SoundContainers.Insert(insertIndex++, child);
 
                     if (count < 20 && count % 2 == 0)

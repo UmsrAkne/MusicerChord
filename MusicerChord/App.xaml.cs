@@ -31,6 +31,7 @@ namespace MusicerChord
             containerRegistry.Register<ICrossfadeController, CrossFadeControllerV2>();
             containerRegistry.Register<ISoundPlayerFactory, SoundPlayerFactory>();
             containerRegistry.Register<IDateTimeProvider, DateTimeProvider>();
+            containerRegistry.Register<IMetadataReader, AudioMetadataExtractor>();
         }
 
         protected override void OnInitialized()
