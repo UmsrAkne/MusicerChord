@@ -40,6 +40,8 @@ namespace MusicerChord.Models
 
         public bool HasSoundFile { get => hasSoundFile; set => SetProperty(ref hasSoundFile, value); }
 
+        public bool IsEmpty => !HasChildren && !HasSoundFile;
+
         public ObservableCollection<ISoundContainer> Children
         {
             get => children;

@@ -25,6 +25,8 @@ namespace MusicerChord.Models
 
         bool HasSoundFile { get; set; }
 
+        bool IsEmpty { get; }
+
         public int Depth { get; set; }
 
         public Task<IEnumerable<ISoundContainer>> LoadChildren();

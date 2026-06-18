@@ -82,8 +82,17 @@
                     </ContentControl>
                 </StackPanel>
             </DataTemplate>
-
         </ListBox.ItemTemplate>
+
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                        <Setter Property="Opacity" Value="0.2" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ListBox.ItemContainerStyle>
     </ListBox>
 
 </UserControl>

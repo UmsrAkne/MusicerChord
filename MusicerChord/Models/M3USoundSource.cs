@@ -36,6 +36,8 @@ public class M3USoundSource : BindableBase, ISoundContainer
 
     public bool HasSoundFile { get; set; }
 
+    public bool IsEmpty => !HasChildren && !HasSoundFile;
+
     public int Depth { get; set; }
 
     public AsyncRelayCommand LoadChildrenCommand { get; } = new (() => Task.CompletedTask);
