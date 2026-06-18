@@ -167,7 +167,15 @@ namespace MusicerChord.Core
             CurrentItem = player.CurrentItem;
             CurrentPlaybackTimeText = TimeSpan.FromMilliseconds(player.GetPlaybackTimeMs()).ToString(@"hh\:mm\:ss");
             TotalTimeText = TimeSpan.FromMilliseconds(player.GetTotalTimeMs()).ToString(@"hh\:mm\:ss");
-            CurrentSoundName = player.CurrentItem?.SoundFile?.FileNameWithoutExtension ?? string.Empty;
+
+            if (player.CurrentItem is { } playbackItem)
+            {
+                CurrentSoundName = playbackItem.DisplayName;
+            }
+            else
+            {
+                CurrentSoundName = string.Empty;
+            }
         }
 
         private void ClearPlaybackInfo()
