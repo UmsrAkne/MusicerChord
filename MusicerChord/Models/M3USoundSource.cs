@@ -75,6 +75,5 @@ public class M3USoundSource : BindableBase, ISoundContainer
 
     public void UpdateDirectoryStatus(string targetPath)
     {
-        throw new NotImplementedException();
     }
 }
