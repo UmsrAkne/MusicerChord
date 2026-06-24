@@ -54,6 +54,11 @@ namespace MusicerChord.Core
             CrossfadeController.StopAll();
 
             var firstItem = SoundPlaylist.ResetToFirst();
+            if (firstItem == null)
+            {
+                return;
+            }
+
             CrossfadeController.Play(firstItem, CrossfadeController.Volume);
 
             RecordPlayHistory(firstItem);
