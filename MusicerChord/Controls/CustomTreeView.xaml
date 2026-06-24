@@ -16,76 +16,109 @@
 
     <ListBox
         x:Name="DirectoryListBox"
+        HorizontalContentAlignment="Stretch"
         ItemsSource="{Binding SoundContainers}"
         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
         <ListBox.ItemTemplate>
             <DataTemplate DataType="{x:Type models:ISoundContainer}">
-                <StackPanel Orientation="Horizontal">
-                    <ContentControl>
-
-                        <b:Interaction.Triggers>
-                            <b:EventTrigger EventName="MouseDoubleClick">
-                                <b:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.LoadSoundContainerChildrenAsyncCommand}" />
-                            </b:EventTrigger>
-                        </b:Interaction.Triggers>
-
+                <materialDesign:Card
+                    Margin="2,1"
+                    Padding="0"
+                    Background="Transparent"
+                    UniformCornerRadius="8">
+                    <materialDesign:Ripple ClipToBounds="True" Feedback="CornflowerBlue">
                         <StackPanel Orientation="Horizontal">
+                            <ContentControl>
 
-                            <StackPanel.Resources>
-                                <converters:MultiplierConverter x:Key="MultiplierConverter" />
-                            </StackPanel.Resources>
-                            <Border Width="{Binding Depth, Converter={StaticResource MultiplierConverter}, ConverterParameter=20}" />
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="MouseDoubleClick">
+                                        <b:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.LoadSoundContainerChildrenAsyncCommand}" />
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
 
-                            <materialDesign:PackIcon
-                                Width="20"
-                                Height="20"
-                                Margin="6,6,2,6"
-                                Foreground="{StaticResource CommonForegroundBrush}"
-                                Kind="Plus">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding HasSubDirectory}" Value="False">
-                                                <Setter Property="Visibility" Value="Hidden" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                                <StackPanel Orientation="Horizontal">
 
-                            <materialDesign:PackIcon
-                                Width="20"
-                                Height="20"
-                                Margin="2,6,6,6">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
-                                        <Setter Property="Kind" Value="PlaylistMusicOutline" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding HasSoundFile}" Value="False">
-                                                <Setter Property="Kind" Value="Folder" />
-                                                <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                                    <StackPanel.Resources>
+                                        <converters:MultiplierConverter x:Key="MultiplierConverter" />
+                                    </StackPanel.Resources>
+                                    <Border Width="{Binding Depth, Converter={StaticResource MultiplierConverter}, ConverterParameter=20}" />
+
+                                    <materialDesign:PackIcon
+                                        Width="20"
+                                        Height="20"
+                                        Margin="6,6,2,6"
+                                        Foreground="{StaticResource CommonForegroundBrush}"
+                                        Kind="Plus">
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="materialDesign:PackIcon">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasSubDirectory}" Value="False">
+                                                        <Setter Property="Visibility" Value="Hidden" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
+
+                                    <materialDesign:PackIcon
+                                        Width="20"
+                                        Height="20"
+                                        Margin="2,6,6,6">
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="materialDesign:PackIcon">
+                                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                <Setter Property="Kind" Value="PlaylistMusicOutline" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasSoundFile}" Value="False">
+                                                        <Setter Property="Kind" Value="Folder" />
+                                                        <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
 
 
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="{StaticResource CommonFontSize}"
-                                Foreground="{StaticResource CommonForegroundBrush}"
-                                Text="{Binding Name}" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontSize="{StaticResource CommonFontSize}"
+                                        Foreground="{StaticResource CommonForegroundBrush}"
+                                        Text="{Binding Name}" />
+                                </StackPanel>
+                            </ContentControl>
                         </StackPanel>
-                    </ContentControl>
-                </StackPanel>
+                    </materialDesign:Ripple>
+                </materialDesign:Card>
             </DataTemplate>
         </ListBox.ItemTemplate>
 
         <ListBox.ItemContainerStyle>
             <Style TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border
+                                x:Name="Border"
+                                BorderBrush="{TemplateBinding Background}"
+                                BorderThickness="2"
+                                CornerRadius="8">
+                                <ContentPresenter />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="ListBoxItem.IsSelected" Value="True">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="RoyalBlue" />
+                                </Trigger>
+
+                                <Trigger Property="ListBoxItem.IsSelected" Value="False">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="Transparent" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsEmpty}" Value="True">
                         <Setter Property="Opacity" Value="0.2" />
