@@ -53,7 +53,13 @@ namespace MusicerChord.Core
                 return null;
             }
 
-            currentIndex = 0;
+            var firstValidIndex = items.FindIndex(item => !item.SoundFile.IsSkip);
+            if (firstValidIndex == -1)
+            {
+                return null;
+            }
+
+            currentIndex = firstValidIndex;
             return items[currentIndex];
         }
 
