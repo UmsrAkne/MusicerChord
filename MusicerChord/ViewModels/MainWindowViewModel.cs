@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using MusicerChord.Models;
 using MusicerChord.Utils;
 using Prism.Mvvm;
@@ -55,7 +56,8 @@ namespace MusicerChord.ViewModels
 
         public string Title => appVersionInfo.Title;
 
-        private void OnSoundContainerOpened(ISoundContainer obj)
+        // ReSharper disable once AsyncVoidMethod
+        private async void OnSoundContainerOpened(ISoundContainer obj)
         {
             if (obj == null)
             {
@@ -63,7 +65,8 @@ namespace MusicerChord.ViewModels
             }
 
             // 1. mp3ファイルが存在するかチェック (ビジネスロジックは親かサービス層が持つ)
-            var hasMp3 = Directory.EnumerateFiles(obj.AbsolutePath, "*.mp3", SearchOption.TopDirectoryOnly).Any();
+            var hasMp3 = await Task.Run(() =>
+                Directory.EnumerateFiles(obj.AbsolutePath, "*.mp3", SearchOption.TopDirectoryOnly).Any());
 
             if (hasMp3)
             {

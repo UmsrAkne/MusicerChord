@@ -107,36 +107,42 @@ namespace MusicerChord.ViewModels
         {
             // 1. まずはファイル名のリストだけ高速に作成（Durationはまだ0）
             // この機能は対象フォルダの直下（ルート）にあるファイルのみを管理（リスティング）対象とするため、サブフォルダは検索しない。
-            var list = Directory.GetFiles(objAbsolutePath, "*.mp3", SearchOption.TopDirectoryOnly)
-                .Select(p => new SoundFile()
-                {
-                    RelativePath = soundPathResolver.ResolveRelativePath(p),
-                    FullPath = p,
-                })
-                .ToList();
+            // UIスレッドで IO 処理をするとアプリが一瞬止まるので、別スレッドで実行する
+            var list = await Task.Run(() =>
+            {
+                return Directory.GetFiles(objAbsolutePath, "*.mp3", SearchOption.TopDirectoryOnly)
+                    .Select(p => new SoundFile()
+                    {
+                        RelativePath = soundPathResolver.ResolveRelativePath(p),
+                        FullPath = p,
+                    })
+                    .ToList();
+            });
 
             // 2. 画面とプレイヤーサービスに即座にセット（ユーザーを待たせない）
-            SetUpSoundFilesAndPlaylist(list);
+            await SetUpSoundFilesAndPlaylist(list);
 
-            // 3. 重いデータはバックグラウンドで後からロード
-            await Task.Run(async () =>
-            {
-                // サービス層を呼び出す。DB検索（超高速）＋未登録分のみファイル解析（重い）
-                await soundFileService.InitializeFileMetadataAsync(list);
-            });
+            // // 3. 重いデータはバックグラウンドで後からロード
+            await soundFileService.InitializeFileMetadataAsync(list);
         }
 
-        private void SetUpSoundFilesAndPlaylist(List<SoundFile> list)
+        private async Task SetUpSoundFilesAndPlaylist(List<SoundFile> list)
         {
-            SoundFiles = new ObservableCollection<SoundFile>(list);
-            var index = 1;
-            foreach (var soundPlaybackItem in list)
+            var result = await Task.Run(() =>
             {
-                soundPlaybackItem.LineNumber = index++;
-            }
+                var fileList = new ObservableCollection<SoundFile>(list);
+                var index = 1;
+                foreach (var soundPlaybackItem in fileList)
+                {
+                    soundPlaybackItem.LineNumber = index++;
+                }
 
-            SoundPlayerService.SoundPlaylist =
-                new SoundPlaylist(SoundFiles.Select(f => new SoundPlaybackItem(f, metadataReader)).ToList());
+                var playbackItems = fileList.Select(f => new SoundPlaybackItem(f, metadataReader)).ToList();
+                return (Files: fileList, PlaybackItems: playbackItems);
+            });
+
+            SoundFiles = result.Files;
+            SoundPlayerService.SoundPlaylist = new SoundPlaylist(result.PlaybackItems);
         }
     }
 }
