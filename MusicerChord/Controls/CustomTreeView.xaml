@@ -123,6 +123,17 @@
                     <DataTrigger Binding="{Binding IsEmpty}" Value="True">
                         <Setter Property="Opacity" Value="0.2" />
                     </DataTrigger>
+
+                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    From="0.0"
+                                    Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
                 </Style.Triggers>
             </Style>
         </ListBox.ItemContainerStyle>
