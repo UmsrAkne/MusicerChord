@@ -108,11 +108,31 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="ListBoxItem.IsSelected" Value="True">
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="RoyalBlue" />
-                                </Trigger>
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <!-- SolidColorBrush の Color プロパティをアニメーションさせる -->
+                                                <ColorAnimation
+                                                    Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                    To="RoyalBlue"
+                                                    Duration="0:0:0.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
 
-                                <Trigger Property="ListBoxItem.IsSelected" Value="False">
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="Transparent" />
+                                    <!-- 選択が解除された（IsSelected = False に戻った）時の処理 -->
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                    To="Transparent"
+                                                    Duration="0:0:0.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
