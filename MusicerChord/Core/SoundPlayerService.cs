@@ -71,6 +71,38 @@ namespace MusicerChord.Core
             timer.Stop();
         }
 
+        /// <summary>
+        /// 手動で次の曲へスキップします（クロスフェードを行わず完全停止後に即時再生）。
+        /// </summary>
+        public void SkipToNext()
+        {
+            if (SoundPlaylist == null || !SoundPlaylist.HasItems)
+            {
+                return;
+            }
+
+            var nextItem = SoundPlaylist.PeekNext();
+            if (nextItem == null)
+            {
+                // 次の曲がない場合は停止
+                Stop();
+                return;
+            }
+
+            // 現在の再生を完全停止
+            CrossfadeController.StopAll();
+
+            // インデックスを進めて即時再生
+            SoundPlaylist.MoveNext();
+            CrossfadeController.Play(nextItem, CrossfadeController.Volume);
+            RecordPlayHistory(nextItem);
+
+            if (!timer.IsEnabled)
+            {
+                timer.Start();
+            }
+        }
+
         private void PlayNext()
         {
             if (SoundPlaylist == null || !SoundPlaylist.HasItems)
