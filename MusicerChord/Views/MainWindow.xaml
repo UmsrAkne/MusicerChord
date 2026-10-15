@@ -225,6 +225,20 @@
 
                     <Button
                         Width="100"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        Command="{Binding SoundListViewModel.PlayNextCommand}">
+                        <Button.Content>
+                            <TextBlock
+                                FontWeight="ExtraBold"
+                                Foreground="Black"
+                                Text="PlayNext" />
+                        </Button.Content>
+                    </Button>
+
+
+                    <Button
+                        Width="100"
                         Margin="10,0"
                         HorizontalAlignment="Left"
                         Command="{Binding SoundListViewModel.StopCommand}">
