@@ -91,6 +91,31 @@
                             Text="Rev" />
                     </Button.Content>
                 </Button>
+
+                <Button Margin="20,5,0,5" Click="ShowButton_Click">
+                    <Button.Content>
+                        <StackPanel>
+
+                            <materialDesign:PackIcon Kind="Settings" />
+
+                            <Popup
+                                x:Name="MyPopup"
+                                Placement="Bottom"
+                                PlacementTarget="{Binding ElementName=ShowButton}"
+                                StaysOpen="False">
+
+                                <Border
+                                    Padding="10"
+                                    Background="White"
+                                    BorderBrush="LightGray"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <TextBlock Foreground="Black" Text="オプション画面" />
+                                </Border>
+                            </Popup>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
             </StackPanel>
         </StackPanel>
 

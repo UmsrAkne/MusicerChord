@@ -1,4 +1,6 @@
-﻿namespace MusicerChord.Views
+﻿using System.Windows;
+
+namespace MusicerChord.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -8,6 +10,11 @@
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void ShowButton_Click(object sender, RoutedEventArgs e)
+        {
+            MyPopup.IsOpen = true;
         }
     }
 }
