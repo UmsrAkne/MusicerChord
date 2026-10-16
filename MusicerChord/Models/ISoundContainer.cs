@@ -29,6 +29,8 @@ namespace MusicerChord.Models
 
         public int Depth { get; set; }
 
+        public bool IsLoading { get; set; }
+
         public Task<IEnumerable<ISoundContainer>> LoadChildren();
 
         // このソースが内包しているサウンドの相対パス一覧を返す

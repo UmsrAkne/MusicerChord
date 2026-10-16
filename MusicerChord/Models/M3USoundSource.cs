@@ -12,6 +12,7 @@ public class M3USoundSource : BindableBase, ISoundContainer
 {
     private readonly string absoluteRootPath;
     private bool hasChildren;
+    private bool isLoading;
 
     public M3USoundSource(string relativePath, string absoluteRootPath)
     {
@@ -39,6 +40,8 @@ public class M3USoundSource : BindableBase, ISoundContainer
     public bool IsEmpty => !HasChildren && !HasSoundFile;
 
     public int Depth { get; set; }
+
+    public bool IsLoading { get => isLoading; set => SetProperty(ref isLoading, value); }
 
     public AsyncRelayCommand LoadChildrenCommand { get; } = new (() => Task.CompletedTask);
 

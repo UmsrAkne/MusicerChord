@@ -20,6 +20,7 @@ namespace MusicerChord.Models
         private int depth;
         private bool hasSubDirectory;
         private bool hasSoundFile;
+        private bool isLoading;
 
         public DirectorySoundSource(string relativePath, string absoluteRootPath)
         {
@@ -60,6 +61,8 @@ namespace MusicerChord.Models
         public string AbsolutePath { get; set; }
 
         public int Depth { get => depth; set => SetProperty(ref depth, value); }
+
+        public bool IsLoading { get => isLoading; set => SetProperty(ref isLoading, value); }
 
         public AsyncRelayCommand LoadChildrenCommand =>
             loadChildrenCommand ??= new AsyncRelayCommand(async () =>

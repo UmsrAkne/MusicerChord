@@ -33,14 +33,23 @@ namespace MusicerChord.ViewModels
         public AsyncRelayCommand LoadSoundContainerChildrenAsyncCommand =>
         loadSoundContainerChildrenAsyncCommand ??= new AsyncRelayCommand(async () =>
         {
-            if (SelectedContainer == null)
+            var container = SelectedContainer;
+            if (container == null || container.IsLoading)
             {
                 return;
             }
 
-            var children = await SelectedContainer.LoadChildren();
-            await OnRequestInsertChildren(SelectedContainer, children);
-            SoundContainerOpened?.Invoke(SelectedContainer);
+            try
+            {
+                container.IsLoading = true;
+                var children = await container.LoadChildren();
+                await OnRequestInsertChildren(container, children);
+            }
+            finally
+            {
+                container.IsLoading = false;
+                SoundContainerOpened?.Invoke(container);
+            }
         });
 
         public void AddSoundContainers(IEnumerable<ISoundContainer> containers)
