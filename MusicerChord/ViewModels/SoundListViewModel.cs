@@ -61,6 +61,11 @@ namespace MusicerChord.ViewModels
             SoundPlayerService.Play();
         });
 
+        public DelegateCommand<SoundFile> PlayFromItemCommand => new ((soundFile) =>
+        {
+            SoundPlayerService.Play(soundFile);
+        });
+
         public DelegateCommand PlayNextCommand => new DelegateCommand(() =>
         {
             SoundPlayerService.SkipToNext();
