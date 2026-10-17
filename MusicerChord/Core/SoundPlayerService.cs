@@ -64,6 +64,24 @@ namespace MusicerChord.Core
             RecordPlayHistory(firstItem);
         }
 
+        public void Play(SoundFile soundFile)
+        {
+            if (SoundPlaylist is not { HasItems: true, })
+            {
+                return;
+            }
+
+            var toPlayItem = SoundPlaylist.TrySetCurrentItem(soundFile);
+            if (toPlayItem != null)
+            {
+                timer.Start();
+                CrossfadeController.StopAll();
+
+                CrossfadeController.Play(toPlayItem, CrossfadeController.Volume);
+                RecordPlayHistory(toPlayItem);
+            }
+        }
+
         public void Stop()
         {
             SoundPlaylist.ResetToFirst();

@@ -26,7 +26,7 @@
             <SolidColorBrush x:Key="MiddleBackgroundBrush" Color="#444455" />
 
             <SolidColorBrush x:Key="SelectionBrush" Color="#446699" />
-            <SolidColorBrush x:Key="HoverBrush" Color="#335580" />
+            <SolidColorBrush x:Key="HoverBrush" Color="#2A2A44" />
 
             <SolidColorBrush x:Key="AccentBrush" Color="#00BCD4" />
             <SolidColorBrush x:Key="AccentLightBrush" Color="#4DD0E1" />
